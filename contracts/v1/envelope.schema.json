@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/envelope.schema.json",
+  "type": "object",
+  "required": ["version", "id", "type", "timestamp", "device_id", "payload"],
+  "properties": {
+    "version": {"const": "1"},
+    "id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/uuid"},
+    "type": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/messageType"},
+    "timestamp": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/timestamp"},
+    "device_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/deviceId"},
+    "payload": {"type": "object"},
+    "correlation_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/uuid"}
+  },
+  "additionalProperties": false
+}

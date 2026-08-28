@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lefly-agent"
+version = "0.1.0"
+description = "Hardware-independent text agent runtime for LeFly"
+requires-python = ">=3.12,<3.13"
+license = {text = "Apache-2.0"}
+authors = [{name = "LeFly Agent contributors"}]
+dependencies = [
+  "aiohttp>=3.11,<4",
+  "lefly-protocol>=0.1,<0.2",
+  "lefly-sdk-python>=0.1,<0.2",
+]
+
+[project.optional-dependencies]
+llm = [
+  "livekit-agents==1.5.4",
+  "livekit-plugins-openai==1.5.4",
+  "openai>=2,<3",
+  "httpx>=0.27,<1",
+]
+
+[project.scripts]
+lefly-agent = "lefly_agent.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"lefly_agent.model_profiles" = ["*.toml"]

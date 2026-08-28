@@ -1,0 +1,68 @@
+# LeFly Agent M3 non-secret base configuration.
+# Copy this file to agent.toml. Select a provider at startup with
+# --model-profile; the selected profile overrides only this [model] identity.
+# API keys are environment-only: LEFLY_LLM_API_KEY, QWEATHER_API_KEY,
+# and TAVILY_API_KEY. Never add credentials to this file.
+
+[server]
+host = "127.0.0.1"
+port = 8767
+
+[agent]
+device_url = "ws://127.0.0.1:8766/ws/device/simulator"
+device_id = "lefly-sim-01"
+default_city = "Ningbo"
+timezone = "Asia/Shanghai"
+request_timeout = 30.0
+queue_capacity = 8
+history_capacity = 100
+
+[model]
+# Used when --model-profile is omitted.
+provider = ""
+model = ""
+base_url = ""
+max_tool_steps = 3
+
+# Other provider examples (activate one complete [model] configuration):
+# provider = "qwen"            # model = "qwen3.6-flash"
+# provider = "deepseek"        # model = "deepseek-v4-flash"
+# provider = "openai"          # model = "gpt-4o-mini"
+# provider = "openai_compatible" requires an explicit base_url.
+
+[search]
+max_results = 5
+# QWeather now requires the dedicated API Host shown in its developer console.
+# The credential itself remains in QWEATHER_API_KEY. Uncomment when configured.
+# qweather_api_host = "https://your-host.qweatherapi.com"
+tavily_base_url = "https://api.tavily.com"
+
+# Aliases extend the built-in allowlisted intent catalog. Keys outside the
+# published catalog fail startup; the same normalized phrase cannot belong to
+# two intents.
+[fast_intent.aliases]
+nod = ["请点个头"]
+shake_head = ["请摇摇头"]
+look_left = ["往左看"]
+look_right = ["往右看"]
+light_off = ["关闭灯"]
+light_white = ["打开白灯"]
+light_yellow = ["打开黄灯"]
+light_blue = ["打开蓝灯"]
+light_green = ["打开绿灯"]
+light_red = ["打开红灯"]
+rest = ["进入休息"]
+wake = ["醒来"]
+
+# Touch mappings are deterministic and never pass through the LLM. Omit a
+# field to leave that part of the behavior unchanged.
+[touch.left]
+motion = "look_left"
+light_color = "#F1A22E"
+
+[touch.middle]
+motion = "nod"
+
+[touch.right]
+motion = "look_right"
+light_color = "#4E9BE8"

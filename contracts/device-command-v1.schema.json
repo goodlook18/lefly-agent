@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/device-command-v1.schema.json",
+  "type": "object",
+  "required": ["version", "id", "type", "timestamp", "device_id", "payload"],
+  "properties": {
+    "version": {"const": "1"},
+    "id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/uuid"},
+    "type": {
+      "enum": ["motion.play", "motion.relative_move", "motion.absolute_move", "light.solid", "light.paint", "light.brightness", "status.set", "device.rest", "device.get_state"]
+    },
+    "timestamp": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/timestamp"},
+    "device_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/deviceId"},
+    "payload": {"type": "object"}
+  },
+  "oneOf": [
+    {"properties": {"type": {"const": "motion.play"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/motion-play.schema.json"}}},
+    {"properties": {"type": {"const": "motion.relative_move"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/motion-move.schema.json"}}},
+    {"properties": {"type": {"const": "motion.absolute_move"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/motion-move.schema.json"}}},
+    {"properties": {"type": {"const": "light.solid"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/light-solid.schema.json"}}},
+    {"properties": {"type": {"const": "light.paint"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/light-paint.schema.json"}}},
+    {"properties": {"type": {"const": "light.brightness"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/light-brightness.schema.json"}}},
+    {"properties": {"type": {"const": "status.set"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/status-set.schema.json"}}},
+    {"properties": {"type": {"const": "device.rest"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/empty.schema.json"}}},
+    {"properties": {"type": {"const": "device.get_state"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/commands/empty.schema.json"}}}
+  ],
+  "additionalProperties": false
+}

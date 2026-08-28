@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/commands/empty.schema.json",
+  "type": "object",
+  "properties": {
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

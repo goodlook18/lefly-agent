@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/events/motion-started.schema.json",
+  "type": "object",
+  "required": ["command_type", "action", "duration_ms"],
+  "properties": {
+    "command_type": {"enum": ["motion.play", "motion.relative_move", "motion.absolute_move", "device.rest"]},
+    "action": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+    "duration_ms": {"type": "integer", "minimum": 1, "maximum": 60000},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,1 @@
+{"version":"1","id":"10000000-0000-4000-8000-000000000003","type":"motion.absolute_move","timestamp":"2026-08-17T08:00:00.000Z","device_id":"lefly-sim-01","payload":{"joints":{"base_yaw":60},"duration_ms":700}}

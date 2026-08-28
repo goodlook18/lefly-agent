@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/events/sensor-vision.schema.json",
+  "type": "object",
+  "required": ["id", "label", "confidence"],
+  "properties": {
+    "id": {"type": "integer", "minimum": 0},
+    "label": {"type": ["string", "null"], "minLength": 1},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

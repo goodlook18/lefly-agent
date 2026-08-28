@@ -1,0 +1,76 @@
+{
+  "version": "1",
+  "id": "20000000-0000-4000-8000-000000000009",
+  "type": "device.state_changed",
+  "timestamp": "2026-08-17T08:00:00.011Z",
+  "device_id": "lefly-sim-01",
+  "correlation_id": "10000000-0000-4000-8000-000000000009",
+  "payload": {
+    "device_id": "lefly-sim-01",
+    "revision": 1,
+    "connection": "ready",
+    "capabilities": {
+      "commands": {
+        "motion.play": {"scope": "control"},
+        "motion.relative_move": {"scope": "control"},
+        "motion.absolute_move": {"scope": "control"},
+        "light.solid": {"scope": "control"},
+        "light.paint": {"scope": "control"},
+        "light.brightness": {"scope": "control"},
+        "status.set": {"scope": "system"},
+        "device.rest": {"scope": "control"},
+        "device.get_state": {"scope": "control"}
+      },
+      "events": [
+        "command.accepted",
+        "sensor.touch",
+        "sensor.vision.gesture",
+        "sensor.vision.face",
+        "motion.started",
+        "motion.progress",
+        "motion.finished",
+        "device.state_changed",
+        "device.error"
+      ],
+      "motion": {
+        "joints": ["base_yaw", "base_pitch", "elbow_pitch", "wrist_roll", "wrist_pitch"],
+        "presets": [
+          {"name": "nod", "label": "点头"},
+          {"name": "shake", "label": "摇头"},
+          {"name": "sleep", "label": "休眠"}
+        ]
+      },
+      "lights": [
+        {"target": "head_matrix", "kind": "rgb_matrix", "width": 8, "height": 8}
+      ]
+    },
+    "motion": {
+      "state": "idle",
+      "action": null,
+      "joints": {
+        "base_yaw": {"pos": 0, "min": -90, "max": 90},
+        "base_pitch": {"pos": -18, "min": -45, "max": 45},
+        "elbow_pitch": {"pos": 42, "min": -15, "max": 105},
+        "wrist_roll": {"pos": 0, "min": -180, "max": 180},
+        "wrist_pitch": {"pos": 0, "min": -45, "max": 45}
+      }
+    },
+    "light": {
+      "brightness": 0.5,
+      "matrix": {"width": 8, "height": 8},
+      "pixels": [
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0",
+        "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0", "#FFF0D0"
+      ]
+    },
+    "status": {"mode": "active"},
+    "status_strip": {"color": "#438CFF", "effect": "solid"},
+    "command_queue": {"size": 0, "capacity": 8}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/commands/light-solid.schema.json",
+  "type": "object",
+  "required": ["target", "color"],
+  "properties": {
+    "target": {"const": "head_matrix"},
+    "color": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/color"},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

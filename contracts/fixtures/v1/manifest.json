@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "cases": [
+    {"path": "invalid/envelope-command-id.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/envelope-missing-device-id.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/command-correlation-id.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/command-unknown-payload-field.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/command-lowercase-color.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/command-empty-joints.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/command-bad-duration.json", "kind": "command", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/event-sensor-correlation.json", "kind": "event", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/event-partial-state.json", "kind": "event", "valid": false, "error": "invalid_command"},
+    {"path": "invalid/event-error-missing-details.json", "kind": "event", "valid": false, "error": "invalid_command"}
+  ]
+}

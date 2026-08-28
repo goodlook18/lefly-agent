@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lefly-sdk-python"
+version = "0.1.0"
+description = "Asynchronous Python SDK for LeFly device endpoints"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [{name = "LeFly Agent contributors"}]
+dependencies = [
+  "lefly-protocol>=0.1,<0.2",
+  "websockets>=15,<16",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

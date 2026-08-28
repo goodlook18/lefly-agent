@@ -1,0 +1,1 @@
+{"version":"1","id":"30000000-0000-4000-8000-000000000009","type":"device.error","timestamp":"2026-08-17T08:00:00.000Z","device_id":"lefly-sim-01","payload":{"code":"hardware_failure","message":"I2C read failed","recoverable":false}}

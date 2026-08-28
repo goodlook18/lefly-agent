@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/device-event-v1.schema.json",
+  "type": "object",
+  "required": ["version", "id", "type", "timestamp", "device_id", "payload"],
+  "properties": {
+    "version": {"const": "1"},
+    "id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/uuid"},
+    "type": {
+      "enum": ["command.accepted", "sensor.touch", "sensor.vision.gesture", "sensor.vision.face", "motion.started", "motion.progress", "motion.finished", "device.state_changed", "device.error"]
+    },
+    "timestamp": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/timestamp"},
+    "device_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/deviceId"},
+    "correlation_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/uuid"},
+    "payload": {"type": "object"}
+  },
+  "oneOf": [
+    {"properties": {"type": {"const": "command.accepted"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/command-accepted.schema.json"}}, "required": ["correlation_id"]},
+    {"properties": {"type": {"const": "sensor.touch"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/sensor-touch.schema.json"}}, "not": {"required": ["correlation_id"]}},
+    {"properties": {"type": {"const": "sensor.vision.gesture"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/sensor-vision.schema.json"}}, "not": {"required": ["correlation_id"]}},
+    {"properties": {"type": {"const": "sensor.vision.face"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/sensor-vision.schema.json"}}, "not": {"required": ["correlation_id"]}},
+    {"properties": {"type": {"const": "motion.started"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/motion-started.schema.json"}}, "required": ["correlation_id"]},
+    {"properties": {"type": {"const": "motion.progress"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/motion-progress.schema.json"}}, "required": ["correlation_id"]},
+    {"properties": {"type": {"const": "motion.finished"}, "payload": {"$ref": "https://lefly.dev/contracts/v1/events/motion-finished.schema.json"}}, "required": ["correlation_id"]},
+    {"properties": {"type": {"const": "device.state_changed"}, "payload": {"$ref": "https://lefly.dev/contracts/device-state-v1.schema.json"}}},
+    {"properties": {"type": {"const": "device.error"}, "payload": {"$ref": "https://lefly.dev/contracts/device-error-v1.schema.json"}}}
+  ],
+  "additionalProperties": false
+}

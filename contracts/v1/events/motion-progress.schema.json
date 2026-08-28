@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/events/motion-progress.schema.json",
+  "type": "object",
+  "required": ["action", "progress", "elapsed_ms", "joints"],
+  "properties": {
+    "action": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+    "progress": {"type": "number", "minimum": 0, "maximum": 1},
+    "elapsed_ms": {"type": "integer", "minimum": 0},
+    "joints": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/jointPositionMap"},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

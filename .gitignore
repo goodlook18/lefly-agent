@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Node and browser tests
+node_modules/
+playwright-report/
+test-results/
+coverage/
+
+# Local runtime state
+*.log
+logs/
+runtime-state/
+.env
+.env.*
+!.env.example
+packages/lefly-agent/agent.toml
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

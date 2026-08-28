@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/device-state-v1.schema.json",
+  "type": "object",
+  "required": ["device_id", "revision", "connection", "capabilities", "motion", "light", "status", "status_strip", "command_queue"],
+  "properties": {
+    "device_id": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/deviceId"},
+    "revision": {"type": "integer", "minimum": 0},
+    "connection": {"enum": ["connecting", "ready", "degraded", "offline"]},
+    "capabilities": {"$ref": "https://lefly.dev/contracts/v1/capabilities.schema.json"},
+    "motion": {
+      "type": "object",
+      "required": ["state", "action", "joints"],
+      "properties": {
+        "state": {"enum": ["idle", "moving", "error"]},
+        "action": {"anyOf": [{"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"}, {"type": "null"}]},
+        "joints": {
+          "type": "object",
+          "propertyNames": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+          "additionalProperties": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/jointState"}
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"state": {"const": "moving"}}}, "then": {"properties": {"action": {"type": "string"}}}},
+        {"if": {"properties": {"state": {"enum": ["idle", "error"]}}}, "then": {"properties": {"action": {"type": "null"}}}}
+      ],
+      "additionalProperties": false
+    },
+    "light": {
+      "type": "object",
+      "required": ["brightness", "matrix", "pixels"],
+      "properties": {
+        "brightness": {"type": "number", "minimum": 0, "maximum": 1},
+        "matrix": {
+          "type": "object",
+          "required": ["width", "height"],
+          "properties": {
+            "width": {"type": "integer", "minimum": 1},
+            "height": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        },
+        "pixels": {"type": "array", "minItems": 1, "items": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/color"}}
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {"mode": {"enum": ["starting", "resting", "active", "listening", "thinking", "speaking", "error"]}},
+      "additionalProperties": false
+    },
+    "status_strip": {
+      "type": "object",
+      "required": ["color", "effect"],
+      "properties": {
+        "color": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/color"},
+        "effect": {"enum": ["fade", "breath", "solid", "marquee", "level_sweep", "blink"]}
+      },
+      "additionalProperties": false
+    },
+    "command_queue": {
+      "type": "object",
+      "required": ["size", "capacity"],
+      "properties": {
+        "size": {"type": "integer", "minimum": 0},
+        "capacity": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

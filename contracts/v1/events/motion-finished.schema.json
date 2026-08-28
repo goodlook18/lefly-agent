@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/events/motion-finished.schema.json",
+  "type": "object",
+  "required": ["action", "status", "elapsed_ms", "joints", "reason", "error"],
+  "properties": {
+    "action": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+    "status": {"enum": ["completed", "cancelled", "failed"]},
+    "elapsed_ms": {"type": "integer", "minimum": 0},
+    "joints": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/jointPositionMap"},
+    "reason": {"anyOf": [{"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"}, {"type": "null"}]},
+    "error": {"anyOf": [{"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/error"}, {"type": "null"}]},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "completed"}}}, "then": {"properties": {"reason": {"type": "null"}, "error": {"type": "null"}}}},
+    {"if": {"properties": {"status": {"const": "cancelled"}}}, "then": {"properties": {"reason": {"type": "string"}, "error": {"type": "null"}}}},
+    {"if": {"properties": {"status": {"const": "failed"}}}, "then": {"properties": {"reason": {"type": "null"}, "error": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/error"}}}}
+  ],
+  "additionalProperties": false
+}

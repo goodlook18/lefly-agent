@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/events/sensor-touch.schema.json",
+  "type": "object",
+  "required": ["position", "pressed"],
+  "properties": {
+    "position": {"enum": ["left", "middle", "right"]},
+    "pressed": {"type": "boolean"},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/commands/motion-play.schema.json",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

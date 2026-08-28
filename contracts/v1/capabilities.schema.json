@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/capabilities.schema.json",
+  "type": "object",
+  "required": ["commands", "events", "motion", "lights"],
+  "properties": {
+    "commands": {
+      "type": "object",
+      "propertyNames": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/messageType"},
+      "additionalProperties": {
+        "type": "object",
+        "required": ["scope"],
+        "properties": {"scope": {"enum": ["control", "system"]}},
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/messageType"}
+    },
+    "motion": {
+      "type": "object",
+      "required": ["joints", "presets"],
+      "properties": {
+        "joints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"}
+        },
+        "presets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "label"],
+            "properties": {
+              "name": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+              "label": {"type": ["string", "null"], "minLength": 1}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "lights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["target", "kind", "width", "height"],
+        "properties": {
+          "target": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/actionId"},
+          "kind": {"const": "rgb_matrix"},
+          "width": {"type": "integer", "minimum": 1},
+          "height": {"type": "integer", "minimum": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

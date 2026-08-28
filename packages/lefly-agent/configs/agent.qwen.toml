@@ -1,0 +1,5 @@
+# Alibaba Cloud DashScope Qwen profile. Set LEFLY_LLM_API_KEY before startup.
+
+[model]
+provider = "qwen"
+model = "qwen3.6-flash"

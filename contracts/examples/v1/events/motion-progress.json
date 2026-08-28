@@ -1,0 +1,1 @@
+{"version":"1","id":"20000000-0000-4000-8000-000000000006","type":"motion.progress","timestamp":"2026-08-17T08:00:00.700Z","device_id":"lefly-sim-01","correlation_id":"10000000-0000-4000-8000-000000000001","payload":{"action":"nod","progress":0.42,"elapsed_ms":756,"joints":{"base_yaw":12.5,"base_pitch":-25,"elbow_pitch":60,"wrist_roll":0,"wrist_pitch":18}}}

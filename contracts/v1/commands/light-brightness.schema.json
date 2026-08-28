@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/commands/light-brightness.schema.json",
+  "type": "object",
+  "required": ["target", "brightness"],
+  "properties": {
+    "target": {"const": "head_matrix"},
+    "brightness": {"type": "number", "minimum": 0, "maximum": 1},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

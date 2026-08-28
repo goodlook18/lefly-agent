@@ -1,0 +1,5 @@
+# OpenAI profile. Set LEFLY_LLM_API_KEY before startup.
+
+[model]
+provider = "openai"
+model = "gpt-4o-mini"

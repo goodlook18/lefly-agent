@@ -1,0 +1,7 @@
+# Local standard OpenAI-compatible endpoint profile.
+# Set LEFLY_LLM_API_KEY to the credential expected by the endpoint.
+
+[model]
+provider = "openai_compatible"
+model = "local-model"
+base_url = "http://127.0.0.1:8000/v1"

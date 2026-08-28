@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/commands/motion-move.schema.json",
+  "type": "object",
+  "required": ["joints", "duration_ms"],
+  "properties": {
+    "joints": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/jointCommandMap"},
+    "duration_ms": {"type": "integer", "minimum": 1, "maximum": 60000},
+    "extensions": {"$ref": "https://lefly.dev/contracts/v1/common.schema.json#/$defs/extensions"}
+  },
+  "additionalProperties": false
+}

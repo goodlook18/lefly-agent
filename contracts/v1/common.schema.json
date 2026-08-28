@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lefly.dev/contracts/v1/common.schema.json",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "deviceId": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$"},
+    "messageType": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
+    "actionId": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "color": {"type": "string", "pattern": "^#[0-9A-F]{6}$"},
+    "extensions": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9_-]*)+$"},
+      "additionalProperties": true
+    },
+    "jointCommandMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/actionId"},
+      "additionalProperties": {"type": "number"}
+    },
+    "jointPositionMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/actionId"},
+      "additionalProperties": {"type": "number"}
+    },
+    "jointState": {
+      "type": "object",
+      "required": ["pos", "min", "max"],
+      "properties": {
+        "pos": {"type": "number"},
+        "min": {"type": "number"},
+        "max": {"type": "number"}
+      },
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "recoverable", "details"],
+      "properties": {
+        "code": {"$ref": "#/$defs/actionId"},
+        "message": {"type": "string", "minLength": 1},
+        "recoverable": {"type": "boolean"},
+        "details": {"type": ["object", "null"]}
+      },
+      "additionalProperties": false
+    }
+  }
+}

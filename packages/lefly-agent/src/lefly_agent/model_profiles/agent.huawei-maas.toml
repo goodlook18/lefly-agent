@@ -1,0 +1,6 @@
+# Huawei Cloud ModelArts MaaS profile. Set LEFLY_LLM_API_KEY before startup.
+
+[model]
+provider = "huawei_maas"
+model = "deepseek-v4-flash"
+base_url = "https://api.modelarts-maas.com/openai/v1"

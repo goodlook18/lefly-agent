@@ -1,0 +1,5 @@
+# Official DeepSeek profile. Set LEFLY_LLM_API_KEY before startup.
+
+[model]
+provider = "deepseek"
+model = "deepseek-v4-flash"
