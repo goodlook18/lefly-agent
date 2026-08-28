@@ -19,6 +19,7 @@ from tools.check_release_versions import validate_release_version
 from tools.public_release import build_inventory
 
 
+RELEASE_VERSION = "0.1.1"
 REQUIRED_ROOT_FILES = (
     "README.md",
     "LICENSE",
@@ -248,6 +249,14 @@ def check_inventory(root: Path) -> list[Finding]:
         return [Finding("invalid_inventory", path.name, str(error))]
     if data.get("schema_version") != 1 or not isinstance(data.get("files"), dict):
         return [Finding("invalid_inventory", path.name, "invalid schema or files map")]
+    if data.get("release_version") != RELEASE_VERSION:
+        return [
+            Finding(
+                "inventory_version_mismatch",
+                path.name,
+                f"expected release version {RELEASE_VERSION}",
+            )
+        ]
 
     recorded = data["files"]
     current = build_inventory(root)
@@ -289,7 +298,7 @@ def _check_static_assets(root: Path) -> list[Finding]:
 
 def _check_versions(root: Path) -> list[Finding]:
     try:
-        failures = validate_release_version(root, "0.1.0")
+        failures = validate_release_version(root, RELEASE_VERSION)
     except (KeyError, OSError, ValueError) as error:
         return [Finding("invalid_version_metadata", "packages", str(error))]
     return [Finding("version_mismatch", "packages", failure) for failure in failures]

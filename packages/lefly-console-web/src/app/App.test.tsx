@@ -182,7 +182,7 @@ describe("unified console", () => {
     expect(document.querySelector(".revision-fact")).not.toBeInTheDocument();
     const navigationVersion = document.querySelector(".nav-version-mark");
     expect(navigationVersion).toHaveTextContent("VERSION");
-    expect(navigationVersion).toHaveTextContent("v0.1.0");
+    expect(navigationVersion).toHaveTextContent("v0.1.1");
     expect(navigationVersion?.querySelector(".status-dot")).not.toBeInTheDocument();
     expect(document.querySelector(".nav-target-mark")).not.toBeInTheDocument();
     expect(document.querySelector(".revision-block")).not.toBeInTheDocument();

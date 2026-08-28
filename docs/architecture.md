@@ -10,7 +10,7 @@ Browser Console -- Console Control --> Simulator gateway --> Device endpoint
 Browser Console -- Agent Control ----> Text Agent -- Python SDK --> Device endpoint
 
 Device endpoint:
-  - Simulator Lite in v0.1.0
+  - Simulator Lite in v0.1.1
   - separately distributed physical adapter in a later release
 ```
 

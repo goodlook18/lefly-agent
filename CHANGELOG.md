@@ -4,7 +4,23 @@ All notable changes to LeFly Agent are recorded in this file.
 
 ## Unreleased
 
-No changes have been recorded after the first source Alpha.
+No changes have been recorded after the corrective source Alpha.
+
+## 0.1.1 - 2026-08-29
+
+Corrective source-only software Alpha.
+
+### Fixed
+
+- Run the frozen source-inventory gate before package installation can create
+  local `build/` and `*.egg-info/` artifacts in GitHub Actions.
+
+### Changed
+
+- Align all public Python packages, the Console, compatibility documentation,
+  and release inventory on version `0.1.1`.
+- Preserve the immutable `v0.1.0` tag as release history without promoting it
+  to a GitHub Release.
 
 ## 0.1.0 - 2026-08-28
 
@@ -28,4 +44,3 @@ First source-only software Alpha.
 - No Python or npm package is published to a package registry in this release.
 - Local Simulator, Console, and Agent services do not provide production
   authentication, authorization, or TLS.
-

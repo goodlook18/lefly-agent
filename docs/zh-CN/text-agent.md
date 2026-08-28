@@ -2,7 +2,7 @@
 
 [English](../text-agent.md) | 简体中文
 
-Text Agent 将文本交互连接到其他客户端同样使用的公开 SDK。一条标准启动命令同时支持无需凭据的确定性链路和可选 LiveKit LLM 链路。`v0.1.0` 中两条链路都不使用 LiveKit Room、麦克风、扬声器、ASR、TTS、VAD、Camera 或实体驱动。
+Text Agent 将文本交互连接到其他客户端同样使用的公开 SDK。一条标准启动命令同时支持无需凭据的确定性链路和可选 LiveKit LLM 链路。`v0.1.1` 中两条链路都不使用 LiveKit Room、麦克风、扬声器、ASR、TTS、VAD、Camera 或实体驱动。
 
 ## 标准启动方式
 

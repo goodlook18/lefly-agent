@@ -4,7 +4,7 @@
 
 **让 AI Agent 拥有一个桌面身体。**
 
-LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开源桌面具身智能体平台。`v0.1.0` 源码 Alpha 无需实体硬件即可运行：Simulator Lite 提供动作、灯光、传感器和设备状态，浏览器 Console 与 Text Agent 提供两条控制链路。
+LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开源桌面具身智能体平台。`v0.1.1` 源码 Alpha 无需实体硬件即可运行：Simulator Lite 提供动作、灯光、传感器和设备状态，浏览器 Console 与 Text Agent 提供两条控制链路。
 
 ![LeFly Agent Console](docs/assets/console-overview-v0.1.0.png)
 
@@ -21,7 +21,7 @@ LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开
 - 正在验证实体行为的 Agent 与 AI 硬件开发者；
 - 开发可扩展示例的创客、极客和桌面机器人研究者。
 
-## v0.1.0 包含内容
+## v0.1.1 包含内容
 
 - 带版本的 LeFly Device Protocol v1 合约与示例。
 - 面向 Simulator 和未来兼容适配器的异步 Python SDK。

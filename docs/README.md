@@ -2,7 +2,7 @@
 
 English | [简体中文](zh-CN/README.md)
 
-LeFly Agent `v0.1.0` is a source-only software Alpha for educators, students, makers, and developers to prototype desktop embodied-agent behavior without physical hardware.
+LeFly Agent `v0.1.1` is a source-only software Alpha for educators, students, makers, and developers to prototype desktop embodied-agent behavior without physical hardware.
 
 ## Start here
 

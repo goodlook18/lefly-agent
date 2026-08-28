@@ -9,7 +9,7 @@ LeFly Agent 通过明确的进程与协议边界，分离用户交互、直接�
 浏览器 Console -- Agent Control ----> Text Agent -- Python SDK --> 设备端点
 
 设备端点：
-  - v0.1.0 使用 Simulator Lite
+  - v0.1.1 使用 Simulator Lite
   - 后续版本使用独立发布的实体适配器
 ```
 

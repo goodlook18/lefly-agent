@@ -90,7 +90,7 @@ PERFORMANCE OF THIS SOFTWARE.
 ## Separately installed Python dependencies
 
 The source archive does not vendor Python dependencies. Package installers
-resolve them from each package's `pyproject.toml`. Direct `v0.1.0` runtime and
+resolve them from each package's `pyproject.toml`. Direct `v0.1.1` runtime and
 optional text-Agent dependencies include:
 
 | Package | Validated version | License |
@@ -104,7 +104,7 @@ optional text-Agent dependencies include:
 
 `jsonschema` 4.26.0 (MIT) is used by Protocol tests. Review
 resolved transitive dependency metadata when creating a binary distribution;
-`v0.1.0` publishes source only.
+`v0.1.1` publishes source only.
 
 ## Contributor-only frontend dependencies
 

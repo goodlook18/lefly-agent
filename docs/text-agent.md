@@ -2,7 +2,7 @@
 
 English | [简体中文](zh-CN/text-agent.md)
 
-The Text Agent connects text interaction to the same public SDK used by other clients. One standard startup command supports both the credential-free deterministic path and the optional LiveKit LLM path. Neither uses a LiveKit Room, microphone, speaker, ASR, TTS, VAD, Camera, or physical driver in `v0.1.0`.
+The Text Agent connects text interaction to the same public SDK used by other clients. One standard startup command supports both the credential-free deterministic path and the optional LiveKit LLM path. Neither uses a LiveKit Room, microphone, speaker, ASR, TTS, VAD, Camera, or physical driver in `v0.1.1`.
 
 ## Standard startup
 

@@ -21,16 +21,16 @@ class ReleaseVersionTests(unittest.TestCase):
         self.assertEqual(
             read_versions(ROOT),
             {
-                "packages/lefly-agent/pyproject.toml": "0.1.0",
-                "packages/lefly-console-web/package.json": "0.1.0",
-                "packages/lefly-protocol/pyproject.toml": "0.1.0",
-                "packages/lefly-sdk-python/pyproject.toml": "0.1.0",
-                "packages/lefly-simulator/pyproject.toml": "0.1.0",
+                "packages/lefly-agent/pyproject.toml": "0.1.1",
+                "packages/lefly-console-web/package.json": "0.1.1",
+                "packages/lefly-protocol/pyproject.toml": "0.1.1",
+                "packages/lefly-sdk-python/pyproject.toml": "0.1.1",
+                "packages/lefly-simulator/pyproject.toml": "0.1.1",
             },
         )
 
     def test_accepts_the_frozen_source_alpha_version(self):
-        self.assertEqual(validate_release_version(ROOT, "0.1.0"), [])
+        self.assertEqual(validate_release_version(ROOT, "0.1.1"), [])
 
     def test_reports_the_path_and_observed_mismatched_version(self):
         with tempfile.TemporaryDirectory() as directory:

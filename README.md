@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 **A desktop body for AI agents.**
 
-LeFly Agent is an open-source desktop embodied agent platform for AI education, makers, and physical-agent prototyping. The `v0.1.0` source Alpha runs without physical hardware: Simulator Lite provides motion, lighting, sensors, and device state, while the browser Console and Text Agent provide two control paths.
+LeFly Agent is an open-source desktop embodied agent platform for AI education, makers, and physical-agent prototyping. The `v0.1.1` source Alpha runs without physical hardware: Simulator Lite provides motion, lighting, sensors, and device state, while the browser Console and Text Agent provide two control paths.
 
 ![LeFly Agent Console](docs/assets/console-overview-v0.1.0.png)
 
@@ -21,7 +21,7 @@ LeFly Agent is an open-source desktop embodied agent platform for AI education, 
 - Agent and AI-hardware developers prototyping physical behavior; and
 - Makers, hackers, and desktop-robot researchers building extensible demos.
 
-## Included in v0.1.0
+## Included in v0.1.1
 
 - Versioned LeFly Device Protocol v1 contracts and fixtures.
 - Async Python SDK for Simulator and future conforming adapters.

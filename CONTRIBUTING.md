@@ -43,7 +43,7 @@ python -m unittest discover -s tests -v
 python -m unittest discover -s packages/lefly-simulator/tests -v
 python -m unittest discover -s packages/lefly-agent/tests -v
 python tools/audit_open_source_boundary.py packages tests tools
-python tools/check_release_versions.py --root . --expected 0.1.0
+python tools/check_release_versions.py --root . --expected 0.1.1
 python tools/check_public_release.py --root . --skip-inventory
 
 cd packages/lefly-console-web
@@ -64,7 +64,7 @@ maintainer prepares a version tag, regenerate and verify the inventory:
 ```bash
 python tools/update_release_inventory.py \
   --root . \
-  --release-version 0.1.0
+  --release-version 0.1.1
 python tools/check_public_release.py --root .
 ```
 

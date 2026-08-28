@@ -2,7 +2,7 @@
 
 ## Local-development boundary
 
-LeFly Agent `v0.1.0` provides local Simulator, Console, Agent Control, and
+LeFly Agent `v0.1.1` provides local Simulator, Console, Agent Control, and
 Device Protocol services for development. They do not provide production
 authentication, authorization, tenant isolation, rate limiting, or TLS.
 

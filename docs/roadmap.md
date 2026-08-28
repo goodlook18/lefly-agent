@@ -2,7 +2,7 @@
 
 English | [简体中文](zh-CN/roadmap.md)
 
-This roadmap communicates the direction of LeFly Agent after the `v0.1.0` Software Alpha. It describes intended outcomes rather than fixed release dates. Priorities may change as the architecture, safety requirements, and community feedback develop. An item listed here is not a delivery commitment.
+This roadmap communicates the direction of LeFly Agent after the `v0.1.1` Software Alpha. It describes intended outcomes rather than fixed release dates. Priorities may change as the architecture, safety requirements, and community feedback develop. An item listed here is not a delivery commitment.
 
 ## Available now
 
@@ -16,7 +16,7 @@ The current source Alpha provides:
 - reproducible source export, clean-install, integration, browser, visual, and
   license-boundary checks.
 
-See [Compatibility](compatibility.md) for the exact supported surface and known limits of `v0.1.0`.
+See [Compatibility](compatibility.md) for the exact supported surface and known limits of `v0.1.1`.
 
 ## Next
 
