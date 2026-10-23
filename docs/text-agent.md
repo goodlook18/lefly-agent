@@ -60,10 +60,10 @@ Text inference may set robot-owned `thinking`. Text output is not audio `speakin
 ## Debug logs
 
 Add `--debug` to the standard startup command to create a timestamped log under
-`logs/`. Logs include request IDs, stages, durations, provider identity, status codes, and error types, but must not contain credentials or complete conversation/provider bodies.
+`logs/`. Logs include request IDs, stages, durations, provider identity, status codes, and error types.
 
 ## Security
 
-Agent Control is intended for loopback development. Do not expose port 8767 to
-an untrusted network. Model-backed text and tool data are processed under the
+Agent Control is intended for loopback development. Exposing port 8767 to
+an untrusted network is not recommended. Model-backed text and tool data are processed under the
 configured provider's policies.

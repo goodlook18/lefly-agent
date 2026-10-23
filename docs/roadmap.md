@@ -2,7 +2,7 @@
 
 English | [简体中文](zh-CN/roadmap.md)
 
-This roadmap communicates the direction of LeFly Agent after the `v0.1.1` Software Alpha. It describes intended outcomes rather than fixed release dates. Priorities may change as the architecture, safety requirements, and community feedback develop. An item listed here is not a delivery commitment.
+This roadmap communicates the direction of LeFly Agent after the `v0.1.1` Software Alpha. Priorities may change as the architecture, safety requirements, and community feedback develop.
 
 ## Available now
 
@@ -37,7 +37,6 @@ The format, playback behavior, and safety limits must be accepted together befor
 
 - improve installation, diagnostics, and failure guidance from community use;
 - keep Protocol v1 changes additive and capability-gated;
-- expand compatibility evidence without overstating unsupported platforms; and
 - provide English-first documentation with maintained Simplified Chinese
   translations for the primary user workflows.
 
@@ -46,14 +45,14 @@ The format, playback behavior, and safety limits must be accepted together befor
 ### Physical LeFly adapter and developer kit
 
 - provide a separately distributed Device Protocol adapter for supported LeFly
-  hardware without importing hardware drivers into the clean software core;
+  hardware; hardware drivers are not yet imported into the clean software core;
 - run the same protocol conformance behavior against Simulator and hardware;
 - publish versioned compatibility, calibration, safety, assembly, and recovery
   information before claiming a supported kit; and
 - keep hardware sources, third-party dependencies, and licenses independently
   auditable.
 
-The current [Hardware preview](hardware-preview.md) is exploratory and does not announce availability or a delivery date.
+The current [Hardware preview](hardware-preview.md) is for exploration only.
 
 ### Voice and near-field interaction
 
@@ -75,9 +74,6 @@ The current [Hardware preview](hardware-preview.md) is exploratory and does not 
 
 ## Exploring
 
-Exploration items require separate design approval and may not become committed
-features:
-
 - **Visual interaction:** camera-based perception of people, gestures, objects,
   and nearby regions, coordinated with gaze, motion, and expressive eye displays;
 - **Motion intelligence:** assisted choreography, motion adaptation, and later
@@ -86,7 +82,3 @@ features:
   timelines before considering real-time generation; and
 - **Interaction data:** consent-aware collection and evaluation loops for
   improving near-field interaction without making private data a requirement.
-
-## How priorities become work
-
-Roadmap topics become scheduled only after their scope, architecture boundary, acceptance criteria, and release impact are reviewed. Once the public repository is available, concrete work should be linked to GitHub Issues or Milestones so contributors can distinguish active tasks from longer-term direction.
