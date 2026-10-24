@@ -6,9 +6,24 @@ const runtimeState = {
   phase: "idle" as const,
   device_connected: true,
   queue: { size: 0, capacity: 8 },
+  model: { name: "deepseek-chat", status: "unverified" as const },
 };
 
 describe("agentReducer", () => {
+  it("tracks model evidence from snapshots and clears stale evidence on disconnect", () => {
+    let state = agentReducer(createInitialAgentState(), {
+      type: "incoming",
+      message: { version: "1", type: "agent.hello", session_id: "session-1", state: { ...runtimeState, messages: [] } },
+    });
+    expect(state.model).toEqual(runtimeState.model);
+    state = agentReducer(state, {
+      type: "incoming",
+      message: { version: "1", type: "agent.state", state: { ...runtimeState, model: { name: "deepseek-chat", status: "available" } } },
+    });
+    expect(state.model.status).toBe("available");
+    state = agentReducer(state, { type: "closed" });
+    expect(state.model).toEqual({ name: null, status: "disabled" });
+  });
   it("hydrates from hello and deduplicates streamed messages", () => {
     const message = { id: "m-1", role: "agent" as const, text: "收到", timestamp: "2026-08-15T01:00:00Z" };
     let state = agentReducer(createInitialAgentState(), {

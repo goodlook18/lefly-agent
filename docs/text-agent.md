@@ -2,34 +2,52 @@
 
 English | [简体中文](zh-CN/text-agent.md)
 
-The Text Agent connects text interaction to the same public SDK used by other clients. One standard startup command supports both the credential-free deterministic path and the optional LiveKit LLM path. Neither uses a LiveKit Room, microphone, speaker, ASR, TTS, VAD, Camera, or physical driver in `v0.1.1`.
+The Text Agent connects text interaction to the same public SDK used by other clients. The local-demo command starts it alongside Simulator. The default is credential-free and deterministic; an explicitly selected profile enables the optional LiveKit LLM path. Neither path uses a LiveKit Room, microphone, speaker, ASR, TTS, VAD, Camera, or physical driver in `v0.1.2`.
 
 ## Standard startup
 
-Create a local, untracked base configuration once, start Simulator, then run Agent:
+From the repository root, install all four packages as in the
+[quickstart](quickstart.md), then start both services:
 
 ```bash
-cp packages/lefly-agent/agent.example.toml packages/lefly-agent/agent.toml
-python -m lefly_agent \
-  --config packages/lefly-agent/agent.toml \
-  --model-profile deepseek
+python tools/run_local_demo.py
 ```
+
+Open `http://127.0.0.1:8766/`. Browser direct controls go to Simulator;
+Console text input requires this Agent. The default command stays offline
+even when `LEFLY_LLM_API_KEY` happens to be present in the shell.
 
 Strict unambiguous phrases such as `点头`, `摇头`, `向左看`, `向右看`, `变黄灯`, `关灯`, `休息`, and `醒来` use the deterministic fast path. Questions, negation, hypotheticals, multiple intents, and conversation receive a safe offline response when no model is configured.
 
 ## Optional LLM Demo
 
-Install the separately audited extra:
+The single quickstart install command already includes the audited `llm`
+extra. Set your provider's key and explicitly select its profile:
 
 ```bash
-python -m pip install 'packages/lefly-agent[llm]'
 export LEFLY_LLM_API_KEY='your-provider-key'
+python tools/run_local_demo.py --model-profile deepseek
 ```
 
-Restart with the same standard command above. Available profile names are
+Available profile names are
 `openai`, `qwen`, `deepseek`, `huawei-maas`, and `openai-compatible`.
+In this source checkout, each name reads its editable
+`packages/lefly-agent/configs/agent.<profile>.toml` automatically. Edit the
+model ID there and restart the Agent; no `--config` flag is needed for this.
+An installed wheel outside the checkout uses its build-time profile snapshot.
+The launcher rejects a profile without a key before starting either service.
+Keep credentials out of TOML and Git.
 
-The base TOML retains device, server, city, search, queue, touch, and tool-loop settings. A profile changes only model provider, model ID, and optional endpoint. Secrets stay in environment variables.
+For custom Agent settings, copy `packages/lefly-agent/agent.example.toml` to
+an untracked `packages/lefly-agent/agent.toml`. The launcher loads it
+automatically when present, including from another working directory, and
+otherwise uses built-in Agent defaults. Pass `--config` to select another base
+TOML. Standalone `python -m lefly_agent` still requires an explicit `--config`
+for this file. The base TOML retains device, server, city, search, queue,
+touch, and tool-loop settings. A profile changes only model provider, model ID,
+and optional endpoint. Secrets stay in environment variables. The launcher
+keeps local ports 8766 and 8767; run the services individually for other
+endpoints.
 
 QWeather and Tavily are optional:
 
@@ -59,11 +77,11 @@ Text inference may set robot-owned `thinking`. Text output is not audio `speakin
 
 ## Debug logs
 
-Add `--debug` to the standard startup command to create a timestamped log under
+Run Agent individually with `--debug` to create a timestamped log under
 `logs/`. Logs include request IDs, stages, durations, provider identity, status codes, and error types.
 
 ## Security
 
-Agent Control is intended for loopback development. Exposing port 8767 to
-an untrusted network is not recommended. Model-backed text and tool data are processed under the
+Agent Control is intended for loopback development. Do not expose port 8767 to
+an untrusted network. Model-backed text and tool data are processed under the
 configured provider's policies.

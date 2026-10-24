@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import packageMetadata from "../../package.json";
 import {
   Activity,
   AlertTriangle,
@@ -59,7 +58,7 @@ interface PendingRemoteMove {
   joints: Record<string, number>;
 }
 
-const CONSOLE_VERSION = `v${packageMetadata.version}`;
+const CONSOLE_VERSION = `v${__LEFLY_DISPLAY_VERSION__.version}`;
 
 const WORKSPACES: Array<{ id: WorkspaceId; label: string; englishLabel: string; icon: typeof LayoutDashboard }> = [
   { id: "overview", label: "概览", englishLabel: "Overview", icon: LayoutDashboard },
@@ -224,7 +223,7 @@ export function App({
   return (
     <div className="console-shell">
       <header className="global-header">
-        <div className="brand-block"><CircleGauge size={24} /><div><strong>LeFly</strong><span>统一控制台</span></div></div>
+        <div className="brand-block"><CircleGauge size={24} /><div><strong>乐飞 LeFly</strong><span>具身智能桌面机器人虚拟仿真平台</span></div></div>
         <div className="target-control">
           <label htmlFor="target-select">目标设备 <small>Target Device</small></label>
           <div className="select-wrap">
@@ -276,7 +275,7 @@ export function App({
               <span className="nav-bilingual-label"><strong>{label}</strong><small>{englishLabel}</small></span>
             </button>
           ))}
-          <div className="nav-version-mark"><small>VERSION</small><strong>{CONSOLE_VERSION}</strong></div>
+          <div className="nav-version-mark"><small>VERSION · {__LEFLY_DISPLAY_VERSION__.channel}</small><strong>{CONSOLE_VERSION}</strong></div>
         </nav>
 
         <main className={`workspace-content workspace-${workspace}`}>

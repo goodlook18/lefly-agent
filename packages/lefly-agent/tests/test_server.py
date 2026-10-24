@@ -21,6 +21,7 @@ class FakeRuntime:
             "phase": "idle",
             "device_connected": True,
             "queue": {"size": 0, "capacity": 8},
+            "model": {"name": None, "status": "disabled"},
             "messages": [],
         }
 
@@ -62,6 +63,7 @@ class AgentServerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(hello["type"], "agent.hello")
         self.assertEqual(hello["version"], "1")
         self.assertEqual(hello["state"]["phase"], "idle")
+        self.assertEqual(hello["state"]["model"], {"name": None, "status": "disabled"})
 
     async def test_health_does_not_expose_chat_history(self):
         response = await self.client.get("/health")

@@ -4,7 +4,7 @@ import os
 import tempfile
 import tomllib
 import unittest
-from importlib.resources import files
+from contextlib import chdir
 from pathlib import Path
 
 from lefly_agent.config import ConfigError, MODEL_PROFILE_FILES, load_agent_config
@@ -78,25 +78,89 @@ model = "toml-model"
         }
 
         self.assertEqual(set(MODEL_PROFILE_FILES), set(expected))
+        package_root = Path(__file__).resolve().parents[1]
         for profile, provider in expected.items():
             with self.subTest(profile=profile):
-                config = load_agent_config(model_profile=profile, environ={})
+                config = load_agent_config(
+                    model_profile=profile,
+                    environ={"LEFLY_PROFILE_SOURCE_ROOT": str(package_root)},
+                )
+                with (package_root / "configs" / MODEL_PROFILE_FILES[profile]).open(
+                    "rb"
+                ) as source_file:
+                    source_model = tomllib.load(source_file)["model"]["model"]
                 self.assertEqual(config.model.provider, provider)
+                self.assertEqual(config.model.model, source_model)
                 self.assertIsNone(config.secrets.llm_api_key)
 
-    def test_public_profile_examples_match_packaged_runtime_profiles(self):
-        public_dir = Path(__file__).resolve().parents[1] / "configs"
+    def test_environment_model_overrides_selected_source_profile(self):
+        config = load_agent_config(
+            model_profile="qwen",
+            environ={"LEFLY_MODEL": "environment-model"},
+        )
+        self.assertEqual(config.model.model, "environment-model")
 
-        for filename in MODEL_PROFILE_FILES.values():
-            with self.subTest(filename=filename):
-                with (public_dir / filename).open("rb") as public_file:
-                    public_profile = tomllib.load(public_file)
-                packaged_resource = files("lefly_agent.model_profiles").joinpath(
-                    filename
+    def test_selected_profile_reads_edited_source_config_from_checkout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package_root = root / "packages" / "lefly-agent"
+            config_dir = package_root / "configs"
+            config_dir.mkdir(parents=True)
+            (package_root / "pyproject.toml").write_text(
+                "[project]\nname='lefly-agent'\n", encoding="utf-8"
+            )
+            (config_dir / "agent.qwen.toml").write_text(
+                "[model]\nprovider='qwen'\nmodel='user-qwen-model'\n",
+                encoding="utf-8",
+            )
+            with chdir(root):
+                config = load_agent_config(model_profile="qwen", environ={})
+
+        self.assertEqual(config.model.model, "user-qwen-model")
+
+    def test_explicit_profile_source_root_does_not_silently_fall_back(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ConfigError, "source root"):
+                load_agent_config(
+                    model_profile="qwen",
+                    environ={"LEFLY_PROFILE_SOURCE_ROOT": directory},
                 )
-                with packaged_resource.open("rb") as packaged_file:
-                    packaged_profile = tomllib.load(packaged_file)
-                self.assertEqual(public_profile, packaged_profile)
+
+    def test_unrelated_working_directory_is_not_a_profile_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_dir = root / "configs"
+            config_dir.mkdir()
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='another-project'\n", encoding="utf-8"
+            )
+            (config_dir / "agent.qwen.toml").write_text(
+                "[model]\nprovider='qwen'\nmodel='wrong-directory-model'\n",
+                encoding="utf-8",
+            )
+            with chdir(root):
+                config = load_agent_config(model_profile="qwen", environ={})
+
+        self.assertNotEqual(config.model.model, "wrong-directory-model")
+
+    def test_bad_source_profile_fails_instead_of_using_packaged_default(self):
+        with tempfile.TemporaryDirectory() as directory:
+            package_root = Path(directory) / "packages" / "lefly-agent"
+            config_dir = package_root / "configs"
+            config_dir.mkdir(parents=True)
+            (package_root / "pyproject.toml").write_text(
+                "[project]\nname='lefly-agent'\n", encoding="utf-8"
+            )
+            profile = config_dir / "agent.qwen.toml"
+            for value in (
+                "[model]\nprovider='deepseek'\nmodel='wrong-provider'\n",
+                "[model]\nprovider='qwen'\nmodel='test'\napi_key='not-allowed'\n",
+                "[model]\nprovider='qwen'\nmodel=\n",
+            ):
+                with self.subTest(value=value), chdir(directory):
+                    profile.write_text(value, encoding="utf-8")
+                    with self.assertRaises(ConfigError):
+                        load_agent_config(model_profile="qwen", environ={})
 
     def test_model_profile_overrides_only_model_and_preserves_base_config(self):
         path = self.write_config(

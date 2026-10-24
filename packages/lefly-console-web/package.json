@@ -1,12 +1,12 @@
 {
   "name": "@lefly/console-web",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "test": "node --test scripts/run-simulator.test.mjs scripts/run-m3-stack.test.mjs scripts/run-e2e.test.mjs && vitest run",
+    "test": "node --test scripts/run-simulator.test.mjs scripts/run-m3-stack.test.mjs scripts/run-e2e.test.mjs scripts/resolve-display-version.test.mjs && vitest run",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:visual": "playwright test --config playwright.visual.config.ts"
   },

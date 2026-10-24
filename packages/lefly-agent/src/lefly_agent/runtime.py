@@ -103,6 +103,7 @@ class AgentRuntime:
         connection_poll_interval: float = 0.25,
         fast_router: FastIntentRouter | None = None,
         livekit_session: LiveKitSession | None = None,
+        model_name: str | None = None,
         info_service: InfoService | None = None,
         status_coordinator: InternalStatusCoordinator | None = None,
         telemetry: LatencyRecorder | None = None,
@@ -122,6 +123,8 @@ class AgentRuntime:
         self.connection_poll_interval = connection_poll_interval
         self.fast_router = fast_router
         self.livekit_session = livekit_session
+        self._model_name = model_name if livekit_session is not None else None
+        self._model_status = "unverified" if self._model_name else "disabled"
         self.info_service = info_service
         self.status_coordinator = status_coordinator
         self.telemetry = telemetry or LatencyRecorder()
@@ -556,10 +559,16 @@ class AgentRuntime:
         )
 
     def _on_livekit_event(self, event: Any) -> None:
+        event_type = getattr(event, "type", None)
+        if self._model_name is not None and event_type in {"llm.completed", "llm.failed"}:
+            next_status = "available" if event_type == "llm.completed" else "failed"
+            if self._model_status != next_status:
+                self._model_status = next_status
+                self._publish_state()
+            return
         submission = self._active_submission
         if submission is None:
             return
-        event_type = getattr(event, "type", None)
         if event_type == "llm.chunk":
             submission.trace.stage_once("llm_first_chunk", outcome="received")
             return
@@ -658,6 +667,7 @@ class AgentRuntime:
         return {
             "phase": self._phase,
             "device_connected": connected,
+            "model": {"name": self._model_name, "status": self._model_status},
             "queue": {
                 "size": self._queue.qsize(),
                 "capacity": self.queue_capacity,

@@ -4,6 +4,15 @@ import { createAgentControl } from "./agentControl";
 import { createInitialAgentState } from "./agentStore";
 
 describe("createAgentControl", () => {
+  it("exposes model evidence without treating socket availability as model success", () => {
+    const control = createAgentControl({
+      ...createInitialAgentState(),
+      connection: "online",
+      model: { name: "deepseek-chat", status: "unverified" },
+    }, () => true);
+    expect(control.available).toBe(true);
+    expect(control.model).toEqual({ name: "deepseek-chat", status: "unverified" });
+  });
   it("forwards acknowledgement callbacks to the Agent transport", () => {
     const sender = vi.fn(() => true);
     const callbacks = { onAccepted: vi.fn(), onRejected: vi.fn() };

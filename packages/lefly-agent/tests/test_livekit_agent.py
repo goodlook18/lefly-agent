@@ -147,6 +147,7 @@ class LiveKitAgentTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             [event.type for event in self.events].count("llm.chunk"), 2
         )
+        self.assertEqual(self.events[-1].type, "llm.completed")
 
     async def test_provider_failure_before_and_after_delta_is_not_swallowed(self):
         async def fail_before():
@@ -156,7 +157,7 @@ class LiveKitAgentTests(unittest.IsolatedAsyncioTestCase):
 
         with self.assertRaisesRegex(RuntimeError, "provider failed"):
             _ = [chunk async for chunk in self.agent.observe_llm_stream(fail_before())]
-        self.assertEqual(self.events, [])
+        self.assertEqual([event.type for event in self.events], ["llm.failed"])
 
         async def fail_after():
             yield "partial"
@@ -164,7 +165,8 @@ class LiveKitAgentTests(unittest.IsolatedAsyncioTestCase):
 
         with self.assertRaisesRegex(RuntimeError, "provider failed"):
             _ = [chunk async for chunk in self.agent.observe_llm_stream(fail_after())]
-        self.assertEqual(self.events[-1].text, "partial")
+        self.assertEqual(self.events[-1].type, "llm.failed")
+        self.assertEqual(self.events[-2].text, "partial")
 
 
 if __name__ == "__main__":

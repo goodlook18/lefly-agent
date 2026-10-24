@@ -4,7 +4,23 @@ All notable changes to LeFly Agent are recorded in this file.
 
 ## Unreleased
 
-No changes have been recorded after the corrective source Alpha.
+No changes have been recorded after the v0.1.2 candidate.
+
+## 0.1.2 - 2026-10-24
+
+Source Alpha candidate for owner acceptance. This heading does not indicate a published GitHub release.
+
+### Added
+
+- One-command local startup for Simulator and Text Agent, with offline text commands available by default.
+- Provider model profiles loaded from user-editable configuration files and optional local Agent configuration.
+- Console model status showing the selected model name and whether a request has verified it.
+
+### Changed
+
+- Refined the Console's visual style and bilingual navigation.
+- Documented installation, LLM setup, and troubleshooting in the English and Chinese quickstarts.
+- Paused automatic GitHub CI triggers while retaining local release checks and owner acceptance.
 
 ## 0.1.1 - 2026-08-29
 

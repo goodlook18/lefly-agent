@@ -104,6 +104,8 @@ class LiveKitTextSession:
                 )
                 if error is not None and not recovered:
                     await self._agent.update_chat_ctx(turn_context)
+                    if self._turn_tool_error is None:
+                        await self._agent.report_llm_failure()
                     await self._restart_session(session)
                     raise RuntimeError("LiveKit session error: %s" % error) from (
                         error if isinstance(error, BaseException) else None

@@ -1,4 +1,4 @@
-import type { AgentChatMessage, AgentPhase } from "./agentProtocol";
+import type { AgentChatMessage, AgentModelState, AgentPhase } from "./agentProtocol";
 import type { AgentResponseDraftStatus, AgentStoreState, AgentToolProgress } from "./agentStore";
 
 export interface AgentConversationMessage extends AgentChatMessage {
@@ -12,6 +12,7 @@ export interface AgentControl {
   voiceAvailable: boolean;
   phase: AgentPhase;
   deviceConnected: boolean;
+  model: AgentModelState;
   messages: readonly AgentConversationMessage[];
   error: string | null;
   submitText(text: string, callbacks?: AgentSubmissionCallbacks): boolean;
@@ -51,6 +52,7 @@ export function createAgentControl(
     voiceAvailable: false,
     phase: state.phase,
     deviceConnected: state.deviceConnected,
+    model: state.model,
     messages: [...committed, ...drafts],
     error: state.error,
     submitText: (text, callbacks) => sendText(text, callbacks),
@@ -62,6 +64,7 @@ export const unavailableAgentControl: AgentControl = {
   voiceAvailable: false,
   phase: "idle",
   deviceConnected: false,
+  model: { name: null, status: "disabled" },
   messages: [],
   error: null,
   submitText: () => false,

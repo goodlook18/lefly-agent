@@ -1,6 +1,7 @@
 # LeFly Agent M3 non-secret base configuration.
 # Copy this file to agent.toml. Select a provider at startup with
-# --model-profile; the selected profile overrides only this [model] identity.
+# --model-profile; the selected editable configs/agent.<profile>.toml overrides
+# only this [model] identity in a source checkout.
 # API keys are environment-only: LEFLY_LLM_API_KEY, QWEATHER_API_KEY,
 # and TAVILY_API_KEY. Never add credentials to this file.
 
@@ -25,9 +26,7 @@ base_url = ""
 max_tool_steps = 3
 
 # Other provider examples (activate one complete [model] configuration):
-# provider = "qwen"            # model = "qwen3.6-flash"
-# provider = "deepseek"        # model = "deepseek-v4-flash"
-# provider = "openai"          # model = "gpt-4o-mini"
+# Provider and model examples live in configs/agent.<profile>.toml.
 # provider = "openai_compatible" requires an explicit base_url.
 
 [search]

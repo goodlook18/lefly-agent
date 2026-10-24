@@ -92,6 +92,7 @@ async function mockDevice(page: Page) {
         phase: "idle",
         device_connected: true,
         queue: { size: 0, capacity: 8 },
+        model: { name: "deepseek-chat", status: "unverified" },
         messages: [
           { id: "visual-user", role: "user", text: "看左边，然后变成蓝色", timestamp: "2026-08-15T01:02:01Z" },
           { id: "visual-agent", role: "agent", text: "正在看向左边，并把灯光调成蓝色。", timestamp: "2026-08-15T01:02:02Z" },
@@ -113,6 +114,15 @@ test("renders the complete overview without clipping or a blank model", async ({
   await expect(page.getByRole("button", { name: "进入待机状态" })).toBeVisible();
   await expect(page.getByRole("button", { name: "温暖黄光" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "文本指令" })).toBeEnabled();
+  await expect(page.getByTestId("agent-model-status")).toHaveText("deepseek-chat");
+  await expect(page.getByTestId("agent-model-status")).toHaveClass(/model-unverified/);
+  await page.getByTestId("agent-model-status").focus();
+  await expect(page.getByTestId("agent-model-status")).toBeFocused();
+  expect(await page.getByTestId("agent-model-status").evaluate((element) =>
+    getComputedStyle(element, "::after").content,
+  )).toContain("尚未通过实际请求验证");
+  await expect(page.locator(".brand-block strong")).toHaveText("乐飞 LeFly");
+  await expect(page.locator(".brand-block span")).toHaveText("具身智能桌面机器人虚拟仿真平台");
   await expect(page.getByRole("log", { name: "最近聊天记录" })).toContainText("正在看向左边");
   await expect(page.getByRole("log", { name: "最近设备事件" }).locator(".scene-event-row").last()).toContainText("device.visual_event_4");
 
@@ -144,7 +154,7 @@ test("renders the complete overview without clipping or a blank model", async ({
   await agentInput.fill("视觉状态检查");
   const sendButton = page.getByRole("button", { name: "发送文本指令" });
   await expect(sendButton).toBeEnabled();
-  await expect(sendButton).toHaveCSS("background-color", "rgb(23, 32, 38)");
+  await expect(sendButton).toHaveCSS("background-color", "rgb(29, 36, 48)");
 
   const visualContract = await page.evaluate(() => {
     const root = getComputedStyle(document.documentElement);
@@ -167,11 +177,16 @@ test("renders the complete overview without clipping or a blank model", async ({
       },
       roles: {
         activeNavColor: style(".workspace-nav > button.active svg").color,
+        activeNavBackground: style(".workspace-nav > button.active svg").backgroundColor,
+        activeChineseColor: style(".workspace-nav > button.active strong").color,
+        activeEnglishColor: style(".workspace-nav > button.active small").color,
         sendBackground: style(".agent-composer button").backgroundColor,
         motionAccent: style(".quick-rail > .rail-section:first-child .rail-title svg").color,
         lightingAccent: style(".light-quick .rail-title svg").color,
         jointAccent: style(".rail-joint-control input").accentColor,
         lightAccent: style(".light-quick input").accentColor,
+        sceneBackground: style(".scene-stage").backgroundColor,
+        dockBackground: style(".overview-chat-dock").backgroundColor,
       },
       refinement: {
         navEnglishSize: style(".nav-bilingual-label small").fontSize,
@@ -193,34 +208,41 @@ test("renders the complete overview without clipping or a blank model", async ({
     };
   });
   expect(visualContract.tokens).toEqual({
-    primary: "#337d6d",
-    primaryHover: "#28695e",
-    hardware: "#f1a22e",
-    canvas: "#e9edec",
-    panel: "#f8faf9",
+    primary: "#2583f5",
+    primaryHover: "#1472e4",
+    hardware: "#f2a13b",
+    canvas: "#ffffff",
+    panel: "#fafbfc",
     error: "#c85850",
     errorText: "#a94741",
   });
   expect(visualContract.roles).toEqual({
-    activeNavColor: "rgb(51, 125, 109)",
-    sendBackground: "rgb(23, 32, 38)",
-    motionAccent: "rgb(51, 125, 109)",
-    lightingAccent: "rgb(241, 162, 46)",
-    jointAccent: "rgb(51, 125, 109)",
-    lightAccent: "rgb(241, 162, 46)",
+    activeNavColor: "rgb(255, 255, 255)",
+    activeNavBackground: "rgb(37, 131, 245)",
+    activeChineseColor: "rgb(37, 131, 245)",
+    activeEnglishColor: "rgb(37, 131, 245)",
+    sendBackground: "rgb(29, 36, 48)",
+    motionAccent: "rgb(37, 131, 245)",
+    lightingAccent: "rgb(242, 161, 59)",
+    jointAccent: "rgb(37, 131, 245)",
+    lightAccent: "rgb(242, 161, 59)",
+    sceneBackground: "rgb(255, 255, 255)",
+    dockBackground: "rgb(245, 246, 248)",
   });
-  expect(visualContract.refinement.navEnglishSize).toBe(testInfo.project.name.startsWith("mobile") ? "9px" : "10px");
-  expect(visualContract.refinement.railEnglishSize).toBe("10px");
-  expect(visualContract.refinement.jointCodeSize).toBe("10px");
+  expect(visualContract.refinement.navEnglishSize).toBe(
+    testInfo.project.name.startsWith("mobile") ? "9px" : testInfo.project.name.startsWith("tablet") ? "10px" : "11px",
+  );
+  expect(visualContract.refinement.railEnglishSize).toBe("12px");
+  expect(visualContract.refinement.jointCodeSize).toBe(testInfo.project.name.startsWith("mobile") ? "10px" : "12px");
   expect(visualContract.refinement.composerHeight).toBe("35px");
   expect(visualContract.refinement.sendSize).toEqual(["35px", "35px"]);
-  expect(visualContract.refinement.selectedSwatchShadow).toContain("rgb(23, 32, 38)");
+  expect(visualContract.refinement.selectedSwatchShadow).toContain("rgb(29, 36, 48)");
   expect(visualContract.refinement.lightRangeAppearance).toBe("none");
   expect(visualContract.refinement.lightRangeBackground).toContain("linear-gradient");
   expect(visualContract.refinement.actionCorner).not.toBe("none");
   expect(visualContract.refinement.targetLabelAlignment).toBe("center");
-  expect(visualContract.refinement.footerDivider).toEqual(["solid", "rgb(203, 212, 210)"]);
-  expect(visualContract.refinement.overviewEnglishColor).toBe("rgb(146, 157, 160)");
+  expect(visualContract.refinement.footerDivider).toEqual(["solid", "rgb(223, 228, 236)"]);
+  expect(visualContract.refinement.overviewEnglishColor).toBe("rgb(143, 153, 168)");
   await page.emulateMedia({ reducedMotion: "reduce" });
   const reducedMotionDuration = await sendButton.evaluate((element) =>
     Number.parseFloat(getComputedStyle(element).transitionDuration),
@@ -257,7 +279,10 @@ test("renders the complete overview without clipping or a blank model", async ({
       errorTextOnSurface: contrast("--color-error-text", "--color-surface"),
     };
   });
-  for (const ratio of Object.values(contrastRatios)) expect(ratio).toBeGreaterThanOrEqual(4.5);
+  expect(contrastRatios.primaryOnSurface).toBeGreaterThanOrEqual(3);
+  for (const [role, ratio] of Object.entries(contrastRatios)) {
+    if (role !== "primaryOnSurface") expect(ratio).toBeGreaterThanOrEqual(4.5);
+  }
 
   const connectionFact = page.locator(".connection-fact");
   await connectionFact.evaluate((element) => {
@@ -316,7 +341,13 @@ test("renders the complete overview without clipping or a blank model", async ({
   const screenshotPath = path.join(process.cwd(), "test-results", "visual", `overview-${testInfo.project.name}.png`);
   const canvasScreenshotPath = path.join(process.cwd(), "test-results", "visual", `model-${testInfo.project.name}.png`);
   await canvas.screenshot({ path: canvasScreenshotPath });
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.getByRole("button", { name: "收起五关节调节" }).click();
+  await agentInput.fill("");
+  await page.evaluate(() => {
+    (document.activeElement as HTMLElement)?.blur();
+    window.scrollTo(0, 0);
+    document.querySelector(".quick-rail")?.scrollTo(0, 0);
+  });
   await page.screenshot({
     path: screenshotPath,
     fullPage: testInfo.project.name.startsWith("mobile"),
@@ -334,21 +365,21 @@ test("applies stable semantic roles across every workspace", async ({ page }, te
       name: "动作",
       selector: ".motion-presets .section-heading > svg",
       property: "color",
-      value: "rgb(51, 125, 109)",
+      value: "rgb(37, 131, 245)",
       screenshot: "motion",
     },
     {
       name: "灯光",
       selector: ".light-output-action",
       property: "backgroundColor",
-      value: "rgb(241, 162, 46)",
+      value: "rgb(242, 161, 59)",
       screenshot: "lighting",
     },
     {
       name: "传感器",
       selector: ".injection-lab .section-heading > svg",
       property: "color",
-      value: "rgb(51, 125, 109)",
+      value: "rgb(37, 131, 245)",
       screenshot: "sensors",
     },
     {

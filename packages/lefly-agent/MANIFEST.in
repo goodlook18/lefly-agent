@@ -1,0 +1,6 @@
+include configs/README.md
+include configs/agent.openai.toml
+include configs/agent.qwen.toml
+include configs/agent.deepseek.toml
+include configs/agent.huawei-maas.toml
+include configs/agent.openai-compatible.toml

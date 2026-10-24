@@ -304,13 +304,24 @@ export function Overview({ gateway, agentControl }: OverviewProps) {
           <div className="overview-chat-dock">
             <div className="agent-chat-heading">
               <strong>对话</strong>
-              <span className={`agent-phase phase-${agentControl.phase}`}>
-                {agentControl.available ? agentPhaseLabel(agentControl.phase) : "未连接"}
+              <span
+                className={`agent-model-status model-${agentControl.available ? agentControl.model.status : "disconnected"}`}
+                data-testid="agent-model-status"
+                role="status"
+                tabIndex={0}
+                title={modelStatusDescription(agentControl)}
+                data-description={modelStatusDescription(agentControl)}
+                aria-label={modelStatusDescription(agentControl)}
+              >
+                {agentControl.available && agentControl.model.status === "failed" && <CircleOff size={13} aria-hidden="true" />}
+                <span>{agentControl.available ? agentControl.model.name ?? "未连接大模型" : "Text Agent 未连接"}</span>
               </span>
             </div>
             <div className="agent-message-list" role="log" aria-label="最近聊天记录" ref={messageListRef}>
               {agentControl.messages.length === 0 ? (
-                <p className="empty-copy">暂无对话</p>
+                !agentControl.available ? (
+                  <p className="empty-copy agent-empty-guidance">Text Agent 未连接。运行 python tools/run_local_demo.py 后可输入文本指令；大模型对话还需模型配置和 API Key。</p>
+                ) : <p className="empty-copy">暂无对话</p>
               ) : agentControl.messages.map((message) => (
                 <div className={`agent-message role-${message.role}${message.streamState ? ` stream-${message.streamState}` : ""}`} key={message.id}>
                   <span>{message.role === "user" ? "你" : message.role === "agent" ? "乐飞" : "系统"}</span>
@@ -541,11 +552,13 @@ export function Overview({ gateway, agentControl }: OverviewProps) {
   );
 }
 
-function agentPhaseLabel(phase: AgentControl["phase"]): string {
-  if (phase === "interpreting") return "理解中";
-  if (phase === "executing") return "执行中";
-  if (phase === "error") return "异常";
-  return "在线";
+function modelStatusDescription(control: AgentControl): string {
+  if (!control.available) return "Text Agent 未连接，无法判断大模型状态";
+  const name = control.model.name;
+  if (name === null) return "Text Agent 已启动；本地文本指令可用。大模型对话需要模型配置和 API Key";
+  if (control.model.status === "available") return `${name}：最近一次大模型调用成功；不代表实时连接状态`;
+  if (control.model.status === "failed") return `${name}：最近一次大模型调用失败，可重试`;
+  return `${name}：已配置大模型，尚未通过实际请求验证`;
 }
 
 function agentToolLabel(tool: AgentToolProgress["toolName"]): string {

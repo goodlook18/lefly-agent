@@ -1,4 +1,7 @@
 export type AgentPhase = "idle" | "interpreting" | "executing" | "error";
+export type AgentModelState =
+  | { name: null; status: "disabled" }
+  | { name: string; status: "unverified" | "available" | "failed" };
 export type AgentChatRole = "user" | "agent" | "system";
 export type AgentToolName =
   | "play_motion"
@@ -20,6 +23,7 @@ export interface AgentRuntimeState {
   phase: AgentPhase;
   device_connected: boolean;
   queue: { size: number; capacity: number };
+  model: AgentModelState;
 }
 
 export type AgentIncoming =
@@ -198,21 +202,32 @@ function parseRuntimeState(value: unknown, requireMessages: false): { ok: true; 
 function parseRuntimeState(value: unknown, requireMessages: boolean) {
   if (!isRecord(value) || !isPhase(value.phase) || typeof value.device_connected !== "boolean" || !isRecord(value.queue)) return { ok: false as const };
   const allowedStateKeys = requireMessages
-    ? ["phase", "device_connected", "queue", "messages"]
-    : ["phase", "device_connected", "queue"];
+    ? ["phase", "device_connected", "queue", "model", "messages"]
+    : ["phase", "device_connected", "queue", "model"];
   if (!hasOnlyKeys(value, allowedStateKeys) || !hasOnlyKeys(value.queue, ["size", "capacity"])) return { ok: false as const };
+  const model = parseModelState(value.model);
+  if (model === null) return { ok: false as const };
   const { size, capacity } = value.queue;
   if (!isCount(size) || !isCount(capacity) || capacity <= 0 || size > capacity) return { ok: false as const };
   const runtime: AgentRuntimeState = {
     phase: value.phase,
     device_connected: value.device_connected,
     queue: { size, capacity },
+    model,
   };
   if (!requireMessages) return { ok: true as const, value: runtime };
   if (!Array.isArray(value.messages)) return { ok: false as const };
   const messages = value.messages.map(parseChatMessage);
   if (messages.some((message) => message === null)) return { ok: false as const };
   return { ok: true as const, value: { ...runtime, messages: messages as AgentChatMessage[] } };
+}
+
+function parseModelState(value: unknown): AgentModelState | null {
+  if (!isRecord(value) || !hasOnlyKeys(value, ["name", "status"])) return null;
+  if (value.status === "disabled") return value.name === null ? { name: null, status: "disabled" } : null;
+  if (value.status !== "unverified" && value.status !== "available" && value.status !== "failed") return null;
+  if (!nonEmpty(value.name) || value.name !== value.name.trim()) return null;
+  return { name: value.name, status: value.status };
 }
 
 function parseChatMessage(value: unknown): AgentChatMessage | null {

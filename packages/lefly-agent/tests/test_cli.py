@@ -1,4 +1,5 @@
 import sys
+import tomllib
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -77,7 +78,10 @@ class AgentCliTests(unittest.TestCase):
 
         self.assertEqual(config.agent.default_city, "Chengdu")
         self.assertEqual(config.model.provider, "qwen")
-        self.assertEqual(config.model.model, "qwen3.6-flash")
+        profile = Path(__file__).resolve().parents[1] / "configs" / "agent.qwen.toml"
+        with profile.open("rb") as profile_file:
+            expected_model = tomllib.load(profile_file)["model"]["model"]
+        self.assertEqual(config.model.model, expected_model)
 
     def test_model_factory_is_used_only_when_llm_key_is_configured(self):
         offline = resolve_settings([], environ={})

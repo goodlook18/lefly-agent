@@ -88,12 +88,21 @@ class LeFlyLiveKitAgent(Agent):
         self, stream: AsyncIterable[Any]
     ) -> AsyncIterator[Any]:
         """Observe visible text while forwarding every LiveKit chunk unchanged."""
-        async for chunk in stream:
-            await self._emit(LiveKitAgentEvent(type="llm.chunk"))
-            text = self._chunk_text(chunk)
-            if text:
-                await self._emit(LiveKitAgentEvent(type="text.delta", text=text))
-            yield chunk
+        try:
+            async for chunk in stream:
+                await self._emit(LiveKitAgentEvent(type="llm.chunk"))
+                text = self._chunk_text(chunk)
+                if text:
+                    await self._emit(LiveKitAgentEvent(type="text.delta", text=text))
+                yield chunk
+        except Exception:
+            await self.report_llm_failure()
+            raise
+        await self._emit(LiveKitAgentEvent(type="llm.completed"))
+
+    async def report_llm_failure(self) -> None:
+        """Report an unrecovered provider failure without exposing its details."""
+        await self._emit(LiveKitAgentEvent(type="llm.failed"))
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         stream = Agent.default.llm_node(self, chat_ctx, tools, model_settings)

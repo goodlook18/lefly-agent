@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 from typing import Iterable, Sequence
 from urllib.parse import unquote, urlsplit
@@ -16,10 +17,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.check_release_versions import validate_release_version
-from tools.public_release import build_inventory
+from tools.release_inventory import build_inventory
 
 
-RELEASE_VERSION = "0.1.1"
+RELEASE_VERSION = "0.1.2"
+LOCAL_AGENT_CONFIG = "packages/lefly-agent/agent.toml"
 REQUIRED_ROOT_FILES = (
     "README.md",
     "LICENSE",
@@ -52,7 +54,7 @@ ALLOWED_ROOT_ENTRIES = {
 ALLOWED_DOC_FILES = {
     "docs/README.md",
     "docs/architecture.md",
-    "docs/assets/console-overview-v0.1.0.png",
+    "docs/assets/lefly-vitual-012.png",
     "docs/assets/hardware-parts.jpg",
     "docs/assets/hardware-survey-qr.png",
     "docs/compatibility.md",
@@ -239,7 +241,7 @@ def check_markdown_links(root: Path) -> list[Finding]:
     return findings
 
 
-def check_inventory(root: Path) -> list[Finding]:
+def check_inventory(root: Path, *, local_checkout: bool = False) -> list[Finding]:
     path = root / ".lefly-release-inventory.json"
     if not path.is_file():
         return [Finding("missing_inventory", path.name, "release inventory is absent")]
@@ -260,6 +262,8 @@ def check_inventory(root: Path) -> list[Finding]:
 
     recorded = data["files"]
     current = build_inventory(root)
+    if local_checkout:
+        current.pop(LOCAL_AGENT_CONFIG, None)
     findings = []
     for relative in sorted(set(recorded) - set(current)):
         findings.append(Finding("inventory_missing_file", relative, "recorded file is absent"))
@@ -393,14 +397,52 @@ def _check_required_and_forbidden(root: Path) -> list[Finding]:
     return findings
 
 
-def check_public_tree(root: Path, *, verify_inventory: bool = True) -> list[Finding]:
+def _check_local_agent_config(root: Path) -> list[Finding]:
+    git = root / ".git"
+    if not git.is_dir() or git.is_symlink():
+        return [Finding("local_checkout_git_missing", ".git", "local mode requires a Git checkout")]
+    config = root / LOCAL_AGENT_CONFIG
+    if not config.exists() and not config.is_symlink():
+        return []
+    if config.is_symlink() or not config.is_file():
+        return [Finding("local_config_invalid", LOCAL_AGENT_CONFIG, "must be an ordinary file")]
+    tracked = subprocess.run(
+        ["git", "--no-optional-locks", "-C", str(root), "ls-files", "--cached", "--", LOCAL_AGENT_CONFIG],
+        capture_output=True, text=True, check=False,
+    )
+    ignored = subprocess.run(
+        ["git", "--no-optional-locks", "-C", str(root), "check-ignore", "-q", "--", LOCAL_AGENT_CONFIG],
+        capture_output=True, text=True, check=False,
+    )
+    findings = []
+    if tracked.returncode != 0 or ignored.returncode not in (0, 1):
+        findings.append(Finding("local_config_git_error", LOCAL_AGENT_CONFIG, "cannot verify Git state"))
+    else:
+        if tracked.stdout.strip():
+            findings.append(Finding("local_config_tracked", LOCAL_AGENT_CONFIG, "local configuration is Git-tracked"))
+        if ignored.returncode != 0:
+            findings.append(Finding("local_config_not_ignored", LOCAL_AGENT_CONFIG, "local configuration is not Git-ignored"))
+    return findings
+
+
+def check_public_tree(
+    root: Path, *, verify_inventory: bool = True, local_checkout: bool = False
+) -> list[Finding]:
     root = root.resolve()
     findings = []
+    if local_checkout:
+        findings.extend(_check_local_agent_config(root))
     findings.extend(_check_required_and_forbidden(root))
-    findings.extend(_check_text(root, _iter_text_files([root])))
+    text_files = _iter_text_files([root])
+    if local_checkout:
+        text_files = (
+            path for path in text_files
+            if _relative(root, path) != LOCAL_AGENT_CONFIG
+        )
+    findings.extend(_check_text(root, text_files))
     findings.extend(check_markdown_links(root))
     if verify_inventory:
-        findings.extend(check_inventory(root))
+        findings.extend(check_inventory(root, local_checkout=local_checkout))
     findings.extend(_check_static_assets(root))
     findings.extend(_check_versions(root))
     findings.extend(check_provenance(root))
@@ -410,6 +452,10 @@ def check_public_tree(root: Path, *, verify_inventory: bool = True) -> list[Find
 def main(argv: Sequence[str] = ()) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--local-checkout", action="store_true",
+        help="allow the one ignored and untracked local Agent configuration",
+    )
     parser.add_argument(
         "--skip-inventory",
         action="store_true",
@@ -421,6 +467,7 @@ def main(argv: Sequence[str] = ()) -> int:
         findings = check_public_tree(
             args.root,
             verify_inventory=not args.skip_inventory,
+            local_checkout=args.local_checkout,
         )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"Public release check failed: {error}", file=sys.stderr)

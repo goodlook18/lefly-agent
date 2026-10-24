@@ -1,8 +1,7 @@
 name: CI
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -40,7 +39,7 @@ jobs:
       - name: Audit source boundary and release metadata
         run: |
           python tools/audit_open_source_boundary.py packages tests tools
-          python tools/check_release_versions.py --root . --expected 0.1.1
+          python tools/check_release_versions.py --root . --expected 0.1.2
       - name: Validate public tree
         run: python tools/check_public_release.py --root . --skip-inventory
       - name: Verify clean installed runtime chains

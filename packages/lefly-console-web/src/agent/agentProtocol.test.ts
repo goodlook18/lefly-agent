@@ -6,6 +6,7 @@ const state = {
   phase: "idle",
   device_connected: true,
   queue: { size: 0, capacity: 8 },
+  model: { name: "deepseek-chat", status: "unverified" },
 };
 
 describe("Agent Control protocol", () => {
@@ -88,6 +89,20 @@ describe("Agent Control protocol", () => {
       request_id: "r-1",
       unexpected: true,
     }).ok).toBe(false);
+  });
+
+  it("validates coherent model state in Agent snapshots", () => {
+    const valid = parseAgentIncoming({ version: "1", type: "agent.state", state });
+    expect(valid).toEqual({ ok: true, value: { version: "1", type: "agent.state", state } });
+    for (const model of [
+      { name: null, status: "available" },
+      { name: "deepseek-chat", status: "disabled" },
+      { name: "deepseek-chat", status: "connected" },
+      { name: " ", status: "unverified" },
+    ]) {
+      expect(parseAgentIncoming({ version: "1", type: "agent.state", state: { ...state, model } }).ok).toBe(false);
+    }
+    expect(parseAgentIncoming({ version: "1", type: "agent.state", state: { ...state, model: undefined } }).ok).toBe(false);
   });
 
   it("creates a bounded versioned text submission", () => {

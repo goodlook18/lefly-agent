@@ -48,7 +48,7 @@ describe("AgentSocket", () => {
       version: "1",
       type: "agent.hello",
       session_id: "s-1",
-      state: { phase: "idle", device_connected: true, queue: { size: 0, capacity: 8 }, messages: [] },
+      state: { phase: "idle", device_connected: true, queue: { size: 0, capacity: 8 }, model: { name: null, status: "disabled" }, messages: [] },
     }));
     first.disconnect();
     vi.advanceTimersByTime(50);

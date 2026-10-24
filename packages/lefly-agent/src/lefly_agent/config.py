@@ -203,16 +203,53 @@ def _assert_no_stored_secrets(value: object, *, path: str = "") -> None:
         _assert_no_stored_secrets(child, path=location)
 
 
-def _load_model_profile(name: str) -> Mapping[str, Any]:
+def _source_profile_dir(environment: Mapping[str, str]) -> Path | None:
+    explicit_root = environment.get("LEFLY_PROFILE_SOURCE_ROOT")
+    if explicit_root is not None and not explicit_root.strip():
+        raise ConfigError("LEFLY_PROFILE_SOURCE_ROOT must be a non-empty path")
+    roots = (
+        [Path(explicit_root).expanduser()]
+        if explicit_root is not None
+        else [Path.cwd(), Path(__file__).resolve().parents[2]]
+    )
+    for root in roots:
+        for package_root in (root / "packages" / "lefly-agent", root):
+            config_dir = package_root / "configs"
+            if not config_dir.is_dir():
+                continue
+            try:
+                with (package_root / "pyproject.toml").open("rb") as manifest_file:
+                    manifest = tomllib.load(manifest_file)
+            except (OSError, tomllib.TOMLDecodeError):
+                continue
+            project = manifest.get("project")
+            if isinstance(project, Mapping) and project.get("name") == "lefly-agent":
+                return config_dir
+    if explicit_root is not None:
+        raise ConfigError("model profile source root does not contain Agent configs")
+    return None
+
+
+def _load_model_profile(
+    name: str, environment: Mapping[str, str]
+) -> Mapping[str, Any]:
     filename = MODEL_PROFILE_FILES.get(name)
     if filename is None:
         raise ConfigError("unknown model profile: %s" % name)
-    try:
+    source_dir = _source_profile_dir(environment)
+    if source_dir is None:
         resource = files("lefly_agent.model_profiles").joinpath(filename)
+        origin = "packaged"
+    else:
+        resource = source_dir / filename
+        origin = "source"
+    try:
         with resource.open("rb") as profile_file:
             profile = tomllib.load(profile_file)
     except (OSError, tomllib.TOMLDecodeError) as error:
-        raise ConfigError("unable to load model profile: %s" % name) from error
+        raise ConfigError(
+            "unable to load %s model profile %s: %s" % (origin, name, resource)
+        ) from error
     _assert_no_stored_secrets(profile)
     unknown_sections = sorted(set(profile) - {"model"})
     if unknown_sections:
@@ -228,6 +265,9 @@ def _load_model_profile(name: str) -> Mapping[str, Any]:
         raise ConfigError(
             "unknown model profile field: %s" % ", ".join(unknown_fields)
         )
+    if model.get("provider") != name.replace("-", "_"):
+        raise ConfigError("model profile provider does not match %s" % name)
+    logger.info("model.profile.selected name=%s source=%s", name, origin)
     return model
 
 
@@ -370,6 +410,7 @@ def load_agent_config(
     if tuple(version[:2]) != (3, 12):
         raise ConfigError("LeFly Agent requires Python 3.12")
 
+    environment = os.environ if environ is None else environ
     values = _defaults()
     provider_explicit = False
     if path is not None:
@@ -387,12 +428,11 @@ def load_agent_config(
         _merge(values, toml_values)
 
     if model_profile is not None:
-        profile_model = _load_model_profile(model_profile)
+        profile_model = _load_model_profile(model_profile, environment)
         values["model"]["base_url"] = None
         _merge(values["model"], profile_model)
         provider_explicit = True
 
-    environment = os.environ if environ is None else environ
     if "LEFLY_LLM_PROVIDER" in environment:
         provider_explicit = True
     for variable, field_path in _ENV_FIELDS.items():

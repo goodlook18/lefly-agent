@@ -1,8 +1,16 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+import packageMetadata from "./package.json";
+import { resolveDisplayVersionFromConfig } from "./scripts/resolve-display-version.mjs";
+
+const displayVersion = resolveDisplayVersionFromConfig(import.meta.url, packageMetadata.version);
+
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __LEFLY_DISPLAY_VERSION__: JSON.stringify(displayVersion),
+  },
   build: {
     outDir: "../lefly-simulator/src/lefly_simulator/static",
     emptyOutDir: true,

@@ -5,7 +5,7 @@ import {
   DirectionalLight,
   HemisphereLight,
   Mesh,
-  MeshStandardMaterial,
+  MeshBasicMaterial,
   PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
@@ -62,7 +62,7 @@ export function LeFlyScene({
     let scene: Scene | null = null;
     let model: LeFlyModel | null = null;
     let groundGeometry: PlaneGeometry | null = null;
-    let groundMaterial: MeshStandardMaterial | null = null;
+    let groundMaterial: MeshBasicMaterial | null = null;
     let controls: OrbitControls | null = null;
     let observer: ResizeObserver | null = null;
     let resizeListener: (() => void) | null = null;
@@ -115,7 +115,7 @@ export function LeFlyScene({
         powerPreference: "high-performance",
       });
       scene = new Scene();
-      scene.background = new Color(0xe7eaeb);
+      scene.background = new Color(0xffffff);
 
       const camera = new PerspectiveCamera(42, 1, 0.1, 60);
       camera.position.set(8.85, 5.56, 11.18);
@@ -136,15 +136,11 @@ export function LeFlyScene({
       scene.add(model.root);
 
       groundGeometry = new PlaneGeometry(22, 22);
-      groundMaterial = new MeshStandardMaterial({
-        color: 0xd8dcdd,
-        roughness: 0.88,
-        metalness: 0.03,
-      });
+      groundMaterial = new MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
       const ground = new Mesh(groundGeometry, groundMaterial);
       ground.name = "studio-ground";
       ground.rotation.x = -Math.PI / 2;
-      ground.receiveShadow = true;
+      ground.receiveShadow = false;
       scene.add(ground);
 
       const hemisphere = new HemisphereLight(0xf8fbff, 0x737a7d, 1.9);

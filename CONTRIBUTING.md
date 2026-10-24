@@ -43,7 +43,7 @@ python -m unittest discover -s tests -v
 python -m unittest discover -s packages/lefly-simulator/tests -v
 python -m unittest discover -s packages/lefly-agent/tests -v
 python tools/audit_open_source_boundary.py packages tests tools
-python tools/check_release_versions.py --root . --expected 0.1.1
+python tools/check_release_versions.py --root . --expected 0.1.2
 python tools/check_public_release.py --root . --skip-inventory
 
 cd packages/lefly-console-web
@@ -57,19 +57,18 @@ coverage. Changes to a bundled dependency or asset must update the public
 third-party notices and document its origin and license in the contribution;
 maintainers update release provenance when preparing a release.
 
-Do not edit `.lefly-release-inventory.json` in an ordinary pull request. Branch
-CI checks the public boundary without requiring frozen release digests. When a
-maintainer prepares a version tag, regenerate and verify the inventory:
+Do not edit `.lefly-release-inventory.json` in an ordinary pull request. The
+`--skip-inventory` check above validates source changes without requiring
+frozen release digests. Maintainers import accepted public changes into the
+private upstream. Its allowlist exporter then regenerates the public tree and
+inventory. Before a version tag, validate that clean export:
 
 ```bash
-python tools/update_release_inventory.py \
-  --root . \
-  --release-version 0.1.1
 python tools/check_public_release.py --root .
 ```
 
-Tag CI enforces the frozen inventory. The private development upstream remains
-the source of truth for shared files; maintainers reconcile accepted public
-changes there before regenerating the public release mirror.
+Automatic GitHub CI is paused; maintainers run local checks before the owner
+publishes. The private development upstream remains the source of truth for
+shared files and release inventory.
 
 By submitting a contribution, you agree that it is licensed under Apache-2.0.

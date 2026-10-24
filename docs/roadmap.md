@@ -2,7 +2,7 @@
 
 English | [简体中文](zh-CN/roadmap.md)
 
-This roadmap communicates the direction of LeFly Agent after the `v0.1.1` Software Alpha. Priorities may change as the architecture, safety requirements, and community feedback develop.
+This roadmap communicates the direction of LeFly Agent after the `v0.1.2` Software Alpha. Priorities may change as the architecture, safety requirements, and community feedback develop.
 
 ## Available now
 
@@ -16,7 +16,7 @@ The current source Alpha provides:
 - reproducible source export, clean-install, integration, browser, visual, and
   license-boundary checks.
 
-See [Compatibility](compatibility.md) for the exact supported surface and known limits of `v0.1.1`.
+See [Compatibility](compatibility.md) for the exact supported surface and known limits of `v0.1.2`.
 
 ## Next
 
@@ -31,12 +31,13 @@ pipeline. The intended outcome includes:
 - the same named-action entry point for Console, SDK, and Agent clients; and
 - a clear execution boundary for future physical-device adapters.
 
-The format, playback behavior, and safety limits must be accepted together before the action pipeline is presented as a supported public feature.
+The action pipeline will be presented as a supported public feature once its format, playback behavior, and safety limits have been accepted together.
 
 ### Software Alpha stabilization
 
 - improve installation, diagnostics, and failure guidance from community use;
 - keep Protocol v1 changes additive and capability-gated;
+- expand compatibility evidence without overstating unsupported platforms; and
 - provide English-first documentation with maintained Simplified Chinese
   translations for the primary user workflows.
 
@@ -45,14 +46,14 @@ The format, playback behavior, and safety limits must be accepted together befor
 ### Physical LeFly adapter and developer kit
 
 - provide a separately distributed Device Protocol adapter for supported LeFly
-  hardware; hardware drivers are not yet imported into the clean software core;
+  hardware; hardware drivers will remain outside the clean software core;
 - run the same protocol conformance behavior against Simulator and hardware;
 - publish versioned compatibility, calibration, safety, assembly, and recovery
   information before claiming a supported kit; and
 - keep hardware sources, third-party dependencies, and licenses independently
   auditable.
 
-The current [Hardware preview](hardware-preview.md) is for exploration only.
+The current [Hardware preview](hardware-preview.md) is exploratory.
 
 ### Voice and near-field interaction
 
@@ -69,8 +70,8 @@ The current [Hardware preview](hardware-preview.md) is for exploration only.
 - add project-based extension exercises for custom behaviors and Agent tools;
 - prepare teacher guidance, student worksheets, troubleshooting, and example
   projects; and
-- extend the learning path to supported physical hardware only after the
-  adapter, kit, and safety boundaries are stable.
+- extend the learning path to supported physical hardware once the adapter,
+  kit, and safety boundaries are stable.
 
 ## Exploring
 

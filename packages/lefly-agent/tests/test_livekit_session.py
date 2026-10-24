@@ -139,6 +139,13 @@ class RecordingFactory:
         return session
 
 
+class FailingRestartFactory(RecordingFactory):
+    def __call__(self, **kwargs):
+        if self.calls:
+            raise RuntimeError("restart failed")
+        return super().__call__(**kwargs)
+
+
 class LiveKitTextSessionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.agent = LeFlyLiveKitAgent(FakeRobot(), FakeInfo())
@@ -203,11 +210,30 @@ class LiveKitTextSessionTests(unittest.IsolatedAsyncioTestCase):
         await self.adapter.start()
         session = self.factory.calls[0]
         session.error_on_run = RuntimeError("provider stream interrupted")
+        observed = []
+        self.adapter.subscribe(observed.append)
 
         with self.assertRaisesRegex(RuntimeError, "provider stream interrupted"):
             await self.adapter.run_turn("中断测试")
 
+        self.assertEqual([event.type for event in observed], ["llm.failed"])
         self.assertEqual(await self.adapter.run_turn("下一轮"), "完成")
+
+    async def test_model_failure_is_reported_even_if_session_restart_fails(self):
+        factory = FailingRestartFactory()
+        adapter = LiveKitTextSession(
+            self.agent, llm=object(), session_factory=factory,
+        )
+        self.addAsyncCleanup(adapter.close)
+        events = []
+        adapter.subscribe(events.append)
+        await adapter.start()
+        factory.calls[0].error_on_run = RuntimeError("provider unavailable")
+
+        with self.assertRaisesRegex(RuntimeError, "restart failed"):
+            await adapter.run_turn("测试失败")
+
+        self.assertEqual([event.type for event in events], ["llm.failed"])
 
     async def test_recoverable_error_with_final_message_completes_turn(self):
         await self.adapter.start()

@@ -4,9 +4,9 @@
 
 **让 AI Agent 拥有一个桌面身体。**
 
-LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开源桌面具身智能体平台。`v0.1.1` 源码 Alpha 无需实体硬件即可运行：Simulator Lite 提供动作、灯光、传感器和设备状态，浏览器 Console 与 Text Agent 提供两条控制链路。
+LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开源桌面具身智能体平台。`v0.1.2` 源码 Alpha 无需实体硬件即可运行：Simulator Lite 提供动作、灯光、传感器和设备状态，浏览器 Console 与 Text Agent 提供两条控制链路。
 
-![LeFly Agent Console](docs/assets/console-overview-v0.1.0.png)
+![LeFly Agent Console](docs/assets/lefly-vitual-012.png)
 
 ## 可以用它做什么
 
@@ -21,13 +21,13 @@ LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开
 - 正在验证实体行为的 Agent 与 AI 硬件开发者；
 - 开发可扩展示例的创客、极客和桌面机器人研究者。
 
-## v0.1.1 包含内容
+## v0.1.2 包含内容
 
 - 带版本的 LeFly Device Protocol v1 合约与示例。
 - 面向 Simulator 和未来兼容适配器的异步 Python SDK。
 - Simulator Lite 与内置 Web Console，包括五关节、预设动作、灯光、状态显示、虚拟传感器和诊断能力。
 - 确定性文本控制和可选的 LiveKit LLM 工具调用。
-- 协议、集成、浏览器、视觉与发布自动化检查。
+- 可在本地运行的协议、集成、浏览器、视觉与发布检查。
 
 本 Alpha 不包含语音、实体适配器、硬件设计文件和教育课程。它是面向开发与教育的软件，不是完成态的消费级陪伴机器人，也不是已经提供支持的实体硬件套件。[LeFly 实验性硬件套件预览与非约束性意向调查](docs/zh-CN/hardware-preview.md)展示了正在探索的方向。
 
@@ -36,18 +36,24 @@ LeFly Agent 是一个面向 AI 教育、创客和实体 Agent 原型开发的开
 在仓库根目录使用 Python 3.12：
 
 ```bash
+python -m pip install packages/lefly-protocol packages/lefly-sdk-python packages/lefly-simulator 'packages/lefly-agent[llm]'
+python tools/run_local_demo.py
+```
+
+打开 `http://127.0.0.1:8766/`。一条启动命令会同时运行 Simulator 和 Text Agent。页面上的直接控制使用 Simulator；文本输入需要 Text Agent。简短、确定性的指令无需 API Key 即可离线运行。安装 LLM 可选依赖本身不会调用模型。编译后的 Console 已经包含在 Simulator 中；只有重新构建或测试前端时才需要 Node.js。
+
+若要使用模型对话，设置服务商的 `LEFLY_LLM_API_KEY`，然后运行 `python tools/run_local_demo.py --model-profile deepseek`（也可选择其他[支持的配置](docs/zh-CN/text-agent.md)）。默认命令即使环境中已有 Key 也保持离线。配置和故障排查见[完整快速开始](docs/zh-CN/quickstart.md)。
+
+如果本地打包工具过旧导致安装失败，请在仓库根目录升级工具，然后重试完整安装：
+
+```bash
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install \
   packages/lefly-protocol \
   packages/lefly-sdk-python \
   packages/lefly-simulator \
-  packages/lefly-agent
-python -m lefly_simulator --host 127.0.0.1 --port 8766
+  'packages/lefly-agent[llm]'
 ```
-
-打开 `http://127.0.0.1:8766/`。编译后的 Console 已经包含在 Simulator 中；只有重新构建或测试前端时才需要 Node.js。
-
-Text Agent 的配置和故障排查见[完整快速开始](docs/zh-CN/quickstart.md)。
 
 ## 架构
 

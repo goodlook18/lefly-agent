@@ -6,6 +6,7 @@ import stateChanged from "../../../../contracts/examples/v1/events/device-state-
 import type { ConsoleOutgoing, DeviceState } from "../protocol";
 import type { CapabilitySet } from "../deviceProtocol";
 import type { ConsoleAction, TargetSummary } from "../state/consoleStore";
+import type { AgentModelState } from "../agent/agentProtocol";
 import { App, type ConsoleTransport } from "./App";
 
 vi.mock("../scene/LeFlyScene", () => ({
@@ -105,6 +106,7 @@ function renderConsole(harness: Harness, options: {
     voiceAvailable: boolean;
     phase: "idle" | "interpreting" | "executing" | "error";
     deviceConnected: boolean;
+    model?: AgentModelState;
     messages: Array<{
       id: string;
       role: "user" | "agent" | "system";
@@ -133,7 +135,7 @@ function renderConsole(harness: Harness, options: {
       fetcher={harness.fetcher}
       idFactory={() => `10000000-0000-4000-8000-${String(++id).padStart(12, "0")}`}
       now={options.now ?? (() => new Date("2026-08-14T09:30:00.000Z"))}
-      agentControl={options.agentControl}
+      agentControl={options.agentControl && { model: { name: null, status: "disabled" }, ...options.agentControl }}
     />,
   );
   const target = options.target ?? "simulator";
@@ -182,7 +184,8 @@ describe("unified console", () => {
     expect(document.querySelector(".revision-fact")).not.toBeInTheDocument();
     const navigationVersion = document.querySelector(".nav-version-mark");
     expect(navigationVersion).toHaveTextContent("VERSION");
-    expect(navigationVersion).toHaveTextContent("v0.1.1");
+    expect(navigationVersion).toHaveTextContent(`v${__LEFLY_DISPLAY_VERSION__.version}`);
+    expect(navigationVersion).toHaveTextContent(__LEFLY_DISPLAY_VERSION__.channel);
     expect(navigationVersion?.querySelector(".status-dot")).not.toBeInTheDocument();
     expect(document.querySelector(".nav-target-mark")).not.toBeInTheDocument();
     expect(document.querySelector(".revision-block")).not.toBeInTheDocument();
@@ -976,6 +979,48 @@ describe("unified console", () => {
     expect(within(footer).getByText("已接入")).toBeVisible();
   });
 
+  it("shows model evidence independently from text input availability", () => {
+    const control = {
+      available: true,
+      voiceAvailable: false,
+      phase: "idle" as const,
+      deviceConnected: true,
+      messages: [],
+      error: null,
+      submitText: () => true,
+    };
+    const { rerender } = renderConsole(createHarness(), { agentControl: {
+      ...control,
+      model: { name: "deepseek-chat", status: "unverified" },
+    } });
+    const badge = screen.getByTestId("agent-model-status");
+    expect(badge).toHaveTextContent("deepseek-chat");
+    expect(badge).toHaveClass("model-unverified");
+    expect(screen.getByRole("textbox", { name: "文本指令" })).toBeEnabled();
+
+    rerender(<App agentControl={{ ...control, model: { name: "deepseek-chat", status: "available" } }} />);
+    expect(screen.getByTestId("agent-model-status")).toHaveClass("model-available");
+    expect(screen.getByTestId("agent-model-status")).toHaveAttribute("title", expect.stringContaining("最近一次大模型调用成功"));
+
+    rerender(<App agentControl={{ ...control, model: { name: "deepseek-chat", status: "failed" } }} />);
+    expect(screen.getByTestId("agent-model-status")).toHaveClass("model-failed");
+    expect(screen.getByTestId("agent-model-status")).toHaveAttribute("title", expect.stringContaining("最近一次大模型调用失败"));
+  });
+
+  it("guides an empty disconnected Text Agent without confusing it with a missing model", () => {
+    const { rerender } = renderConsole(createHarness());
+    expect(screen.getByTestId("agent-model-status")).toHaveTextContent("Text Agent 未连接");
+    expect(screen.getByText(/运行 python tools\/run_local_demo.py/)).toBeVisible();
+
+    rerender(<App agentControl={{
+      available: true, voiceAvailable: false, phase: "idle", deviceConnected: true,
+      model: { name: null, status: "disabled" }, messages: [], error: null,
+      submitText: () => true,
+    }} />);
+    expect(screen.getByTestId("agent-model-status")).toHaveTextContent("未连接大模型");
+    expect(screen.queryByText(/运行 python tools\/run_local_demo.py/)).not.toBeInTheDocument();
+  });
+
   it("shows scrollable Agent history and submits text from the overview", async () => {
     const user = userEvent.setup();
     const submitText = vi.fn((
@@ -1114,6 +1159,7 @@ describe("unified console", () => {
       voiceAvailable: false,
       phase: "idle",
       deviceConnected: false,
+      model: { name: null, status: "disabled" },
       messages: [],
       error: null,
       submitText,

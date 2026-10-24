@@ -4,9 +4,9 @@ English | [简体中文](README.zh-CN.md)
 
 **A desktop body for AI agents.**
 
-LeFly Agent is an open-source desktop embodied agent platform for AI education, makers, and physical-agent prototyping. The `v0.1.1` source Alpha runs without physical hardware: Simulator Lite provides motion, lighting, sensors, and device state, while the browser Console and Text Agent provide two control paths.
+LeFly Agent is an open-source desktop embodied agent platform for AI education, makers, and physical-agent prototyping. The `v0.1.2` source Alpha runs without physical hardware: Simulator Lite provides motion, lighting, sensors, and device state, while the browser Console and Text Agent provide two control paths.
 
-![LeFly Agent Console](docs/assets/console-overview-v0.1.0.png)
+![LeFly Agent Console](docs/assets/lefly-vitual-012.png)
 
 ## What you can build
 
@@ -21,14 +21,14 @@ LeFly Agent is an open-source desktop embodied agent platform for AI education, 
 - Agent and AI-hardware developers prototyping physical behavior; and
 - Makers, hackers, and desktop-robot researchers building extensible demos.
 
-## Included in v0.1.1
+## Included in v0.1.2
 
 - Versioned LeFly Device Protocol v1 contracts and fixtures.
 - Async Python SDK for Simulator and future conforming adapters.
 - Simulator Lite with packaged Web Console, five joints, actions, lights,
   status rendering, virtual sensors, and diagnostics.
 - Deterministic text control and optional LiveKit-backed LLM tools.
-- Automated protocol, integration, browser, visual, and release checks.
+- Locally runnable protocol, integration, browser, visual, and release checks.
 
 Voice, physical adapters, hardware design files, and education course material
 are not included in this Alpha. This is developer and education software, not a
@@ -40,19 +40,33 @@ finished consumer companion robot or a supported physical hardware kit. An
 Use Python 3.12 from the repository root:
 
 ```bash
+python -m pip install packages/lefly-protocol packages/lefly-sdk-python packages/lefly-simulator 'packages/lefly-agent[llm]'
+python tools/run_local_demo.py
+```
+
+Open `http://127.0.0.1:8766/`. The compiled Console is already included; Node
+is needed only to rebuild or test the frontend. The one startup command runs
+Simulator and Text Agent together. Browser direct controls use Simulator;
+Console text input needs Text Agent. Short deterministic commands work offline,
+without an API key. Installing the LLM extra alone does not contact a model.
+
+For model-backed conversation, set `LEFLY_LLM_API_KEY` for your provider and
+run `python tools/run_local_demo.py --model-profile deepseek` (or another
+[supported profile](docs/text-agent.md)). The default command stays
+offline even if the key is already set. See the [complete quickstart](docs/quickstart.md)
+for setup and troubleshooting.
+
+If installation fails because local packaging tools are outdated, retry the
+complete install from the repository root:
+
+```bash
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install \
   packages/lefly-protocol \
   packages/lefly-sdk-python \
   packages/lefly-simulator \
-  packages/lefly-agent
-python -m lefly_simulator --host 127.0.0.1 --port 8766
+  'packages/lefly-agent[llm]'
 ```
-
-Open `http://127.0.0.1:8766/`. The compiled Console is already included; Node
-is needed only to rebuild or test the frontend.
-
-For Text Agent setup and troubleshooting, follow the [complete quickstart](docs/quickstart.md).
 
 ## Architecture
 

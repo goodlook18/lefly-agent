@@ -2,4 +2,4 @@
 
 [model]
 provider = "qwen"
-model = "qwen3.6-flash"
+model = "qwen3.8-flash"

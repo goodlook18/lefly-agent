@@ -24,8 +24,3 @@ The QR code is a companion to the direct link above, not the only access path.
 - schematics, PCB source, or Gerber files;
 - wiring or assembly instructions;
 - LeFly Edu delivery date, ordering link, and hardware support commitment.
-
-A future hardware release would first need a tested software adapter, versioned
-design files, provenance records, safety notes, assembly guidance, and a repeatable acceptance process. None of those materials is promised by this preview.
-
-The current prototype is an experimental development device, not a certified consumer product. Future hardware software and its dependencies require a separate license review before distribution.

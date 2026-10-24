@@ -264,6 +264,37 @@ class FakeTouchDispatcher:
 
 
 class AgentRuntimeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_model_status_uses_only_model_events(self):
+        session = FakeLiveKitSession()
+        runtime = AgentRuntime(
+            DeterministicChineseInterpreter(), M3Robot(),
+            fast_router=FastIntentRouter({}), livekit_session=session,
+            model_name="deepseek-chat",
+        )
+        await runtime.start()
+        self.addAsyncCleanup(runtime.close)
+        self.assertEqual(runtime.snapshot()["model"], {"name": "deepseek-chat", "status": "unverified"})
+
+        await runtime.submit_text("fast", "点头")
+        await runtime.wait_until_idle()
+        self.assertEqual(session.run_calls, [])
+        self.assertEqual(runtime.snapshot()["model"]["status"], "unverified")
+
+        session.handlers[0](type("Event", (), {"type": "llm.completed"})())
+        self.assertEqual(runtime.snapshot()["model"]["status"], "available")
+        session.handlers[0](type("Event", (), {"type": "tool.failed"})())
+        self.assertEqual(runtime.snapshot()["model"]["status"], "available")
+        session.handlers[0](type("Event", (), {"type": "llm.failed"})())
+        self.assertEqual(runtime.snapshot()["model"]["status"], "failed")
+        session.handlers[0](type("Event", (), {"type": "llm.completed"})())
+        self.assertEqual(runtime.snapshot()["model"]["status"], "available")
+
+    async def test_offline_model_status_is_disabled(self):
+        runtime = AgentRuntime(DeterministicChineseInterpreter(), M3Robot())
+        await runtime.start()
+        self.addAsyncCleanup(runtime.close)
+        self.assertEqual(runtime.snapshot()["model"], {"name": None, "status": "disabled"})
+
     async def test_delegates_execution_and_lifecycle_to_robot_service(self):
         robot = ActionOnlyRobotService()
         runtime = AgentRuntime(DeterministicChineseInterpreter(), robot)

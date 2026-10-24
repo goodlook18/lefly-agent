@@ -1,4 +1,4 @@
-import type { AgentChatMessage, AgentIncoming, AgentPhase, AgentToolName } from "./agentProtocol";
+import type { AgentChatMessage, AgentIncoming, AgentModelState, AgentPhase, AgentToolName } from "./agentProtocol";
 
 export const AGENT_MESSAGE_LIMIT = 100;
 export const AGENT_TOOL_PROGRESS_LIMIT = 100;
@@ -32,6 +32,7 @@ export interface AgentStoreState {
   phase: AgentPhase;
   deviceConnected: boolean;
   queue: { size: number; capacity: number };
+  model: AgentModelState;
   messages: AgentChatMessage[];
   responseDrafts: AgentResponseDraft[];
   toolProgress: AgentToolProgress[];
@@ -52,6 +53,7 @@ export function createInitialAgentState(): AgentStoreState {
     phase: "idle",
     deviceConnected: false,
     queue: { size: 0, capacity: 8 },
+    model: { name: null, status: "disabled" },
     messages: [],
     responseDrafts: [],
     toolProgress: [],
@@ -61,7 +63,7 @@ export function createInitialAgentState(): AgentStoreState {
 
 export function agentReducer(state: AgentStoreState, action: AgentAction): AgentStoreState {
   if (action.type === "connecting") return { ...state, connection: "connecting", error: null };
-  if (action.type === "closed") return { ...state, connection: "offline", sessionId: null, deviceConnected: false };
+  if (action.type === "closed") return { ...state, connection: "offline", sessionId: null, deviceConnected: false, model: { name: null, status: "disabled" } };
   if (action.type === "protocol_error" || action.type === "send_failed") return { ...state, error: action.message };
   const message = action.message;
   switch (message.type) {
@@ -73,6 +75,7 @@ export function agentReducer(state: AgentStoreState, action: AgentAction): Agent
         phase: message.state.phase,
         deviceConnected: message.state.device_connected,
         queue: message.state.queue,
+        model: message.state.model,
         messages: uniqueMessages(message.state.messages).slice(-AGENT_MESSAGE_LIMIT),
         responseDrafts: [],
         toolProgress: [],
@@ -84,6 +87,7 @@ export function agentReducer(state: AgentStoreState, action: AgentAction): Agent
         phase: message.state.phase,
         deviceConnected: message.state.device_connected,
         queue: message.state.queue,
+        model: message.state.model,
       };
     case "agent.message":
       return {

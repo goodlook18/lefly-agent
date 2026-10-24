@@ -197,6 +197,7 @@ async def serve(
             history_capacity=config.agent.history_capacity,
             fast_router=fast_router if livekit_session is not None else None,
             livekit_session=livekit_session,
+            model_name=config.model.model if livekit_session is not None else None,
             info_service=info_service,
             status_coordinator=status_coordinator,
             touch_dispatcher=touch_dispatcher,
